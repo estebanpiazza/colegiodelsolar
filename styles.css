@@ -540,8 +540,8 @@ button {
 
 /* ===== TESTIMONIALS SECTION ===== */
 .testimonials {
-    background-color: var(--gray-700);
-    color: var(--white);
+    background-color: var(--white);
+    color: var(--primary-color);
     text-align: center;
     position: relative;
 }
@@ -551,7 +551,7 @@ button {
 }
 
 .testimonials .section__title {
-    color: var(--white);
+    color: var(--primary-color);
 }
 
 .testimonials__container {
