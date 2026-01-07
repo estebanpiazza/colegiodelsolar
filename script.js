@@ -245,6 +245,143 @@ if (testimonialsSlider && arrowLeft && arrowRight) {
     }
 }
 
+// ===== BLOG - GOOGLE SHEETS INTEGRATION =====
+const GSHEET_ID = ''; // Ingresá aquí el ID de tu Google Sheet publicado como CSV
+
+async function loadBlogPosts() {
+    const blogContainer = document.getElementById('blog-container');
+    const blogLoading = document.getElementById('blog-loading');
+    const blogEmpty = document.getElementById('blog-empty');
+    const blogError = document.getElementById('blog-error');
+    
+    if (!blogContainer) return;
+    
+    // Si no hay ID configurado, mostrar empty state
+    if (!GSHEET_ID) {
+        blogLoading.style.display = 'none';
+        blogEmpty.style.display = 'flex';
+        return;
+    }
+    
+    try {
+        // Mostrar loading
+        blogLoading.style.display = 'flex';
+        blogEmpty.style.display = 'none';
+        blogError.style.display = 'none';
+        
+        // URL de la Google Sheet publicada como CSV
+        // Formato: https://docs.google.com/spreadsheets/d/{GSHEET_ID}/export?format=csv&gid=0
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${GSHEET_ID}/export?format=csv&gid=0`;
+        
+        const response = await fetch(csvUrl);
+        
+        if (!response.ok) {
+            throw new Error('Error al cargar los datos');
+        }
+        
+        const csvText = await response.text();
+        const posts = parseCSV(csvText);
+        
+        // Ocultar loading
+        blogLoading.style.display = 'none';
+        
+        if (posts.length === 0) {
+            blogEmpty.style.display = 'flex';
+            return;
+        }
+        
+        // Renderizar posts
+        blogContainer.innerHTML = posts.map(post => createBlogPostHTML(post)).join('');
+        
+    } catch (error) {
+        console.error('Error cargando blog posts:', error);
+        blogLoading.style.display = 'none';
+        blogError.style.display = 'flex';
+    }
+}
+
+function parseCSV(csvText) {
+    const lines = csvText.split('\n');
+    const posts = [];
+    
+    // Saltar la primera línea (encabezados)
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        // Parsear CSV respetando comas dentro de comillas
+        const values = parseCSVLine(line);
+        
+        if (values.length >= 4) {
+            posts.push({
+                title: values[0] || 'Sin título',
+                date: values[1] || '',
+                image: values[2] || '',
+                excerpt: values[3] || '',
+                link: values[4] || '#'
+            });
+        }
+    }
+    
+    return posts;
+}
+
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    
+    result.push(current.trim());
+    return result;
+}
+
+function createBlogPostHTML(post) {
+    const hasImage = post.image && post.image !== '';
+    
+    return `
+        <article class="blog-post">
+            <div class="blog-post__image">
+                ${hasImage 
+                    ? `<img src="${post.image}" alt="${post.title}" loading="lazy">` 
+                    : `<div class="blog-post__placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>`
+                }
+            </div>
+            <div class="blog-post__content">
+                ${post.date ? `<span class="blog-post__date">${post.date}</span>` : ''}
+                <h3 class="blog-post__title">${post.title}</h3>
+                <p class="blog-post__excerpt">${post.excerpt}</p>
+                <a href="${post.link}" class="blog-post__link" ${post.link !== '#' ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+                    Leer más →
+                </a>
+            </div>
+        </article>
+    `;
+}
+
+// Cargar blog posts cuando la página carga
+window.addEventListener('load', () => {
+    loadBlogPosts();
+});
+
 // ===== VIDEO CONTROLS =====
 const playButtons = document.querySelectorAll('.play-button');
 playButtons.forEach(button => {
