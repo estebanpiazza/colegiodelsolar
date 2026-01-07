@@ -3,369 +3,593 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colegio del Solar - Educación Bilingüe de Excelencia</title>
-    <meta name="description" content="Colegio del Solar, institución educativa bilingüe con nivel inicial, primario, secundario y educación especial. Formación integral con proyectos innovadores.">
+    <title>Colegio Del Solar - Educación Bilingüe de Excelencia</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Header y Navegación -->
-    <header class="header">
-        <nav class="nav-container">
-            <div class="logo">
-                <h2>Colegio del Solar</h2>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <a href="#" class="nav__logo">
+                <img src="Logo-Del-Solar (1).png" alt="Colegio Del Solar" class="logo-img">
+            </a>
+
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item">
+                        <a href="#inicio" class="nav__link active-link">Inicio</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#nosotros" class="nav__link">Nosotros</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#niveles" class="nav__link">Niveles</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#proyectos" class="nav__link">Proyectos</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#convenios" class="nav__link">Convenios</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#contacto" class="nav__link">Contacto</a>
+                    </li>
+                </ul>
+
+                <div class="nav__close" id="nav-close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
             </div>
-            <button class="menu-toggle" aria-label="Abrir menú">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu">
-                <li><a href="#inicio" class="nav-link">Inicio</a></li>
-                <li><a href="#institucional" class="nav-link">Institucional</a></li>
-                <li><a href="#niveles" class="nav-link">Niveles</a></li>
-                <li><a href="#proyectos" class="nav-link">Proyectos</a></li>
-                <li><a href="#novedades" class="nav-link">Novedades</a></li>
-                <li><a href="#contacto" class="nav-link btn-contacto">Contacto</a></li>
-            </ul>
+
+            <div class="nav__toggle" id="nav-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </div>
         </nav>
     </header>
 
     <!-- Hero Section -->
-    <section id="inicio" class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">Bienvenidos a<br><span>Colegio del Solar</span></h1>
-            <p class="hero-subtitle">Educación bilingüe de excelencia desde los primeros años de vida</p>
-            <a href="#institucional" class="btn btn-primary">Conocé más sobre nosotros</a>
-        </div>
-        <div class="hero-overlay"></div>
-    </section>
-
-    <!-- Institucional -->
-    <section id="institucional" class="institucional">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Nuestra Institución</span>
-                <h2 class="section-title">Compromiso Educativo</h2>
-            </div>
-            <div class="institucional-content">
-                <div class="institucional-text">
-                    <p>Nuestra institución Colegio del Solar, en un marco educativo bilingüe, asume desde los distintos niveles de la educación el compromiso de brindar a los alumnos a partir de los primeros años de vida, una enseñanza que promueve situaciones de aprendizaje a través de todos sus proyectos.</p>
-                    <p>Formamos personas íntegras, capaces de desenvolverse en un mundo globalizado, con valores sólidos y las herramientas necesarias para enfrentar los desafíos del futuro.</p>
-                </div>
-                <div class="institucional-features">
-                    <div class="feature-card">
-                        <div class="feature-icon">🎓</div>
-                        <h3>Educación Bilingüe</h3>
-                        <p>Formación en español e inglés desde el nivel inicial</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🌱</div>
-                        <h3>Desarrollo Integral</h3>
-                        <p>Programas que fomentan todas las áreas del conocimiento</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🤝</div>
-                        <h3>Valores</h3>
-                        <p>Formación en valores, solidaridad y responsabilidad social</p>
-                    </div>
+    <section class="hero" id="inicio">
+        <video class="hero__video" autoplay muted loop playsinline>
+            <source src="correccion tipografia nueva (2).mp4" type="video/mp4">
+        </video>
+        <div class="hero__container container">
+            <div class="hero__content">
+                <span class="hero__subtitle">Bienvenidos a</span>
+                <h1 class="hero__title">Colegio Del Solar</h1>
+                <p class="hero__description">
+                    Educación bilingüe de excelencia que promueve el desarrollo integral desde los primeros años de vida
+                </p>
+                <div class="hero__buttons">
+                    <a href="#nosotros" class="button button--primary">Conocé más</a>
+                    <a href="#contacto" class="button button--secondary">Contacto</a>
                 </div>
             </div>
         </div>
+        <div class="hero__overlay"></div>
     </section>
 
-    <!-- Niveles Educativos -->
-    <section id="niveles" class="niveles">
+    <!-- About Section -->
+    <section class="about section" id="nosotros">
         <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Oferta Educativa</span>
-                <h2 class="section-title">Niveles Educativos</h2>
-            </div>
-            <div class="niveles-grid">
-                <div class="nivel-card">
-                    <div class="nivel-image" style="background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);">
-                        <span class="nivel-icon">🧸</span>
-                    </div>
-                    <div class="nivel-content">
-                        <h3>Nivel Inicial</h3>
-                        <p class="nivel-subtitle">Jardín de Infantes y Maternal - Abuela Aurea</p>
-                        <p>Los primeros años de vida son fundamentales. Promovemos el desarrollo integral a través del juego, la exploración y el aprendizaje bilingüe.</p>
-                        <a href="nivel-inicial.html" class="btn-nivel">Ver más</a>
+            <div class="about__container">
+                <div class="about__content">
+                    <span class="section__subtitle">Nuestra Institución</span>
+                    <h2 class="section__title">Compromiso con la Excelencia Educativa</h2>
+                    <p class="about__description">
+                        Nuestra institución, en un marco educativo bilingüe, asume desde los distintos niveles de la educación el compromiso de brindar a los alumnos, a partir de los primeros años de vida, una enseñanza que promueve situaciones de aprendizaje a través de todos sus proyectos.
+                    </p>
+                    <div class="about__features">
+                        <div class="feature">
+                            <div class="feature__icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="feature__title">Educación Bilingüe</h3>
+                                <p class="feature__text">Formación integral en inglés y español</p>
+                            </div>
+                        </div>
+                        <div class="feature">
+                            <div class="feature__icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 6v6l4 2"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="feature__title">Innovación</h3>
+                                <p class="feature__text">Metodologías educativas de vanguardia</p>
+                            </div>
+                        </div>
+                        <div class="feature">
+                            <div class="feature__icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="feature__title">Comunidad</h3>
+                                <p class="feature__text">Valores y trabajo en equipo</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="nivel-card">
-                    <div class="nivel-image" style="background: linear-gradient(135deg, #5CB3CC 0%, #3B8EA5 100%);">
-                        <span class="nivel-icon">📚</span>
-                    </div>
-                    <div class="nivel-content">
-                        <h3>Educación Primaria</h3>
-                        <p class="nivel-subtitle">Propuesta bilingüe en innovación educativa</p>
-                        <p>Brindamos una educación de calidad con enfoque bilingüe, desarrollando habilidades académicas y sociales fundamentales.</p>
-                        <a href="nivel-primario.html" class="btn-nivel">Ver más</a>
-                    </div>
-                </div>
-                
-                <div class="nivel-card">
-                    <div class="nivel-image" style="background: linear-gradient(135deg, #7B68EE 0%, #5B4DB5 100%);">
-                        <span class="nivel-icon">🎯</span>
-                    </div>
-                    <div class="nivel-content">
-                        <h3>Educación Secundaria</h3>
-                        <p class="nivel-subtitle">Formación Bilingüe - Bachillerato Ciencias Naturales</p>
-                        <p>Preparamos a los jóvenes para enfrentar los desafíos universitarios y profesionales con excelencia académica y valores sólidos.</p>
-                        <a href="nivel-secundario.html" class="btn-nivel">Ver más</a>
-                    </div>
-                </div>
-                
-                <div class="nivel-card">
-                    <div class="nivel-image" style="background: linear-gradient(135deg, #50C878 0%, #3A9B5C 100%);">
-                        <span class="nivel-icon">💚</span>
-                    </div>
-                    <div class="nivel-content">
-                        <h3>Educación Especial</h3>
-                        <p class="nivel-subtitle">Educación integral de niños sordos y/o con trastornos del lenguaje</p>
-                        <p>Brindamos atención personalizada con profesionales especializados para garantizar la inclusión y el desarrollo pleno.</p>
-                        <a href="nivel-especial.html" class="btn-nivel">Ver más</a>
+                <div class="about__image">
+                    <div class="about__image-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Proyectos -->
-    <section id="proyectos" class="proyectos">
+    <!-- Levels Section -->
+    <section class="levels section" id="niveles">
         <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Actividades</span>
-                <h2 class="section-title">Nuestros Proyectos</h2>
-                <p class="section-description">Programas innovadores que enriquecen la formación de nuestros alumnos</p>
-            </div>
-            <div class="proyectos-grid">
-                <div class="proyecto-card">
-                    <div class="proyecto-image">
-                        <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&h=400&fit=crop" alt="Educación Emocional">
+            <span class="section__subtitle">Nuestros Niveles</span>
+            <h2 class="section__title">Acompañamos cada etapa del crecimiento</h2>
+            
+            <div class="levels__container">
+                <article class="level-card">
+                    <div class="level-card__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="8" r="7"></circle>
+                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                        </svg>
                     </div>
-                    <div class="proyecto-content">
-                        <span class="proyecto-tag">Desarrollo Personal</span>
-                        <h3>Educación Emocional</h3>
-                        <p>Proceso para aprender a expresar y controlar las emociones, desarrollando la inteligencia emocional desde temprana edad.</p>
-                    </div>
-                </div>
-
-                <div class="proyecto-card">
-                    <div class="proyecto-image">
-                        <img src="https://images.unsplash.com/photo-1551958219-acbc608c6377?w=600&h=400&fit=crop" alt="Robótica">
-                    </div>
-                    <div class="proyecto-content">
-                        <span class="proyecto-tag">Tecnología</span>
-                        <h3>Robótica</h3>
-                        <p>El espacio de robótica propone un ámbito educativo atractivo que fomenta el pensamiento lógico y la creatividad.</p>
-                    </div>
-                </div>
-
-                <div class="proyecto-card">
-                    <div class="proyecto-image">
-                        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&h=400&fit=crop" alt="Festival de Shakespeare">
-                    </div>
-                    <div class="proyecto-content">
-                        <span class="proyecto-tag">Cultura</span>
-                        <h3>Festival de Shakespeare</h3>
-                        <p>El mundo mágico del gran dramaturgo inglés, acercando a los estudiantes a la literatura universal.</p>
-                    </div>
-                </div>
-
-                <div class="proyecto-card">
-                    <div class="proyecto-image">
-                        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&h=400&fit=crop" alt="Educación Física">
-                    </div>
-                    <div class="proyecto-content">
-                        <span class="proyecto-tag">Deportes</span>
-                        <h3>Educación Física</h3>
-                        <p>Desde el área de Educación Física, hacemos nuestro aporte de una manera muy amplia, promoviendo hábitos saludables.</p>
-                    </div>
-                </div>
-
-                <div class="proyecto-card">
-                    <div class="proyecto-image">
-                        <img src="https://images.unsplash.com/photo-1596496181848-3091d4878b24?w=600&h=400&fit=crop" alt="Atelier de Ideas">
-                    </div>
-                    <div class="proyecto-content">
-                        <span class="proyecto-tag">Arte</span>
-                        <h3>Atelier de Ideas</h3>
-                        <p>Espacio físico destinado a realizar actividades de creación artística, fomentando la expresión y creatividad.</p>
-                    </div>
-                </div>
-
-                <div class="proyecto-card">
-                    <div class="proyecto-image">
-                        <img src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&h=400&fit=crop" alt="Conciencia Sustentable">
-                    </div>
-                    <div class="proyecto-content">
-                        <span class="proyecto-tag">Medio Ambiente</span>
-                        <h3>Conciencia Sustentable</h3>
-                        <p>Fomentando el interés de la comunidad educativa en la participación y mejora del medio ambiente.</p>
-                    </div>
-                </div>
-
-                <div class="proyecto-card">
-                    <div class="proyecto-image">
-                        <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&h=400&fit=crop" alt="Proyecto Solidario">
-                    </div>
-                    <div class="proyecto-content">
-                        <span class="proyecto-tag">Solidaridad</span>
-                        <h3>Proyecto Solidario Institucional</h3>
-                        <p>Llevamos adelante un trabajo solidario en el Merendero "Agrupación movimiento por los niños".</p>
-                    </div>
-                </div>
-
-                <div class="proyecto-card">
-                    <div class="proyecto-image">
-                        <img src="https://images.unsplash.com/photo-1529390079861-591de354faf5?w=600&h=400&fit=crop" alt="Modelo ONU">
-                    </div>
-                    <div class="proyecto-content">
-                        <span class="proyecto-tag">Debate</span>
-                        <h3>Modelo de Naciones Unidas</h3>
-                        <p>El Modelo de Naciones Unidas es una simulación de los órganos de las Naciones Unidas que fomenta el debate.</p>
-                    </div>
-                </div>
-
-                <div class="proyecto-card">
-                    <div class="proyecto-image">
-                        <img src="https://images.unsplash.com/photo-1528819622765-d6bcf132f793?w=600&h=400&fit=crop" alt="Ajedrez">
-                    </div>
-                    <div class="proyecto-content">
-                        <span class="proyecto-tag">Estrategia</span>
-                        <h3>Ajedrez en el Aula</h3>
-                        <p>Programa destinado para niños y niñas de Nivel Inicial y con proyección para toda la institución.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Novedades -->
-    <section id="novedades" class="novedades">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Nuestro Blog</span>
-                <h2 class="section-title">Noticias y Novedades</h2>
-            </div>
-            <div class="novedades-grid">
-                <article class="novedad-card">
-                    <div class="novedad-date">
-                        <span class="date-day">15</span>
-                        <span class="date-month">Nov</span>
-                    </div>
-                    <div class="novedad-content">
-                        <h3>Olimpíadas Matemáticas 2024</h3>
-                        <p>Nuestros alumnos participaron con excelentes resultados en las Olimpíadas Matemáticas Nacionales.</p>
-                        <a href="#" class="novedad-link">Leer más →</a>
-                    </div>
+                    <h3 class="level-card__title">Nivel Inicial</h3>
+                    <p class="level-card__subtitle">Jardín de Infantes y Maternal</p>
+                    <p class="level-card__description">
+                        Primeros pasos en el aprendizaje con estimulación temprana y desarrollo de habilidades fundamentales.
+                    </p>
+                    <a href="#" class="level-card__link">Ver más →</a>
                 </article>
 
-                <article class="novedad-card">
-                    <div class="novedad-date">
-                        <span class="date-day">08</span>
-                        <span class="date-month">Nov</span>
+                <article class="level-card">
+                    <div class="level-card__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            <line x1="10" y1="9" x2="16" y2="9"></line>
+                            <line x1="10" y1="13" x2="16" y2="13"></line>
+                        </svg>
                     </div>
-                    <div class="novedad-content">
-                        <h3>Festival de Shakespeare</h3>
-                        <p>Celebramos nuestro tradicional festival con presentaciones de obras del dramaturgo inglés.</p>
-                        <a href="#" class="novedad-link">Leer más →</a>
-                    </div>
+                    <h3 class="level-card__title">Educación Primaria</h3>
+                    <p class="level-card__subtitle">Propuesta bilingüe e innovación</p>
+                    <p class="level-card__description">
+                        Formación integral con énfasis en el pensamiento crítico y la creatividad en un entorno bilingüe.
+                    </p>
+                    <a href="#" class="level-card__link">Ver más →</a>
                 </article>
 
-                <article class="novedad-card">
-                    <div class="novedad-date">
-                        <span class="date-day">02</span>
-                        <span class="date-month">Nov</span>
+                <article class="level-card">
+                    <div class="level-card__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                        </svg>
                     </div>
-                    <div class="novedad-content">
-                        <h3>Feria de Ciencias</h3>
-                        <p>Los estudiantes presentaron proyectos innovadores en la Feria de Ciencias institucional.</p>
-                        <a href="#" class="novedad-link">Leer más →</a>
+                    <h3 class="level-card__title">Educación Secundaria</h3>
+                    <p class="level-card__subtitle">Bachillerato en Ciencias Naturales</p>
+                    <p class="level-card__description">
+                        Preparación académica de excelencia con orientación en ciencias y formación bilingüe avanzada.
+                    </p>
+                    <a href="#" class="level-card__link">Ver más →</a>
+                </article>
+
+                <article class="level-card">
+                    <div class="level-card__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
                     </div>
+                    <h3 class="level-card__title">Educación Especial</h3>
+                    <p class="level-card__subtitle">Educación integral e inclusiva</p>
+                    <p class="level-card__description">
+                        Atención especializada para niños sordos y/o con trastornos del lenguaje en un ambiente inclusivo.
+                    </p>
+                    <a href="#" class="level-card__link">Ver más →</a>
                 </article>
             </div>
         </div>
     </section>
 
-    <!-- Contacto -->
-    <section id="contacto" class="contacto">
+    <!-- Projects Section -->
+    <section class="projects section" id="proyectos">
         <div class="container">
-            <div class="contacto-content">
-                <div class="contacto-info">
-                    <h2>Contactanos</h2>
-                    <p>Estamos para responderte todas tus consultas. Comunicate con nosotros.</p>
+            <span class="section__subtitle">Programas Académicos</span>
+            <h2 class="section__title">Nuestros Proyectos</h2>
+            
+            <div class="projects__container">
+                <article class="project-card">
+                    <div class="project-card__image">
+                        <div class="project-card__placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                                <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                                <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="project-card__content">
+                        <h3 class="project-card__title">Educación Emocional</h3>
+                        <p class="project-card__description">
+                            Proceso para aprender a expresar y controlar las emociones de manera saludable.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="project-card">
+                    <div class="project-card__image">
+                        <div class="project-card__placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="project-card__content">
+                        <h3 class="project-card__title">Robótica</h3>
+                        <p class="project-card__description">
+                            Espacio educativo atractivo para desarrollar el pensamiento lógico y la creatividad.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="project-card">
+                    <div class="project-card__image">
+                        <div class="project-card__placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="project-card__content">
+                        <h3 class="project-card__title">Festival de Shakespeare</h3>
+                        <p class="project-card__description">
+                            Acercamiento al mundo mágico del gran dramaturgo inglés a través del teatro.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="project-card">
+                    <div class="project-card__image">
+                        <div class="project-card__placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline>
+                                <polyline points="7.5 19.79 7.5 14.6 3 12"></polyline>
+                                <polyline points="21 12 16.5 14.6 16.5 19.79"></polyline>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="project-card__content">
+                        <h3 class="project-card__title">Atelier de Ideas</h3>
+                        <p class="project-card__description">
+                            Espacio físico destinado a realizar actividades de creación artística y expresión.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="project-card">
+                    <div class="project-card__image">
+                        <div class="project-card__placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="project-card__content">
+                        <h3 class="project-card__title">Conciencia Sustentable</h3>
+                        <p class="project-card__description">
+                            Fomentando el interés en la participación y mejora del medio ambiente.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="project-card">
+                    <div class="project-card__image">
+                        <div class="project-card__placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="project-card__content">
+                        <h3 class="project-card__title">Modelo de Naciones Unidas</h3>
+                        <p class="project-card__description">
+                            Simulación de los órganos de las Naciones Unidas para formar ciudadanos globales.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="project-card">
+                    <div class="project-card__image">
+                        <div class="project-card__placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="9" y1="3" x2="9" y2="21"></line>
+                                <line x1="15" y1="3" x2="15" y2="21"></line>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="3" y1="15" x2="21" y2="15"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="project-card__content">
+                        <h3 class="project-card__title">Ajedrez en el Aula</h3>
+                        <p class="project-card__description">
+                            Programa destinado para niños y niñas de Nivel Inicial con proyección institucional.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="project-card">
+                    <div class="project-card__image">
+                        <div class="project-card__placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="8" r="7"></circle>
+                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="project-card__content">
+                        <h3 class="project-card__title">Olimpíadas</h3>
+                        <p class="project-card__description">
+                            Competencias entre alumnos de establecimientos educativos de nivel secundario.
+                        </p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials section" id="testimonios">
+        <div class="container">
+            <span class="section__subtitle">Testimonios en video</span>
+            <h2 class="section__title">De nuestros ex alumnos</h2>
+            
+            <div class="testimonials__container">
+                <button class="testimonials__arrow testimonials__arrow--left" aria-label="Anterior">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+
+                <div class="testimonials__slider">
+                    <article class="testimonial-card">
+                        <div class="testimonial-card__video">
+                            <div class="testimonial-card__placeholder">
+                                <button class="play-button" aria-label="Reproducir video">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
+                                        <circle cx="12" cy="12" r="11" fill="#f9d54c"/>
+                                        <polygon points="10,8 16,12 10,16" fill="white"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="testimonial-card">
+                        <div class="testimonial-card__video">
+                            <div class="testimonial-card__placeholder">
+                                <button class="play-button" aria-label="Reproducir video">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
+                                        <circle cx="12" cy="12" r="11" fill="#f9d54c"/>
+                                        <polygon points="10,8 16,12 10,16" fill="white"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="testimonial-card">
+                        <div class="testimonial-card__video">
+                            <div class="testimonial-card__placeholder">
+                                <button class="play-button" aria-label="Reproducir video">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
+                                        <circle cx="12" cy="12" r="11" fill="#f9d54c"/>
+                                        <polygon points="10,8 16,12 10,16" fill="white"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <button class="testimonials__arrow testimonials__arrow--right" aria-label="Siguiente">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Convenios Section -->
+    <section class="convenios section" id="convenios">
+        <div class="container">
+            <span class="section__subtitle">Alianzas Educativas</span>
+            <h2 class="section__title">Convenios</h2>
+            
+            <div class="convenios__grid convenios__grid--top">
+                <div class="convenio-card">
+                    <div class="convenio-card__placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="convenio-card">
+                    <div class="convenio-card__placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="convenio-card">
+                    <div class="convenio-card__placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="convenio-card">
+                    <div class="convenio-card__placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="convenios__grid convenios__grid--bottom">
+                <div class="convenio-card">
+                    <div class="convenio-card__placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="convenio-card">
+                    <div class="convenio-card__placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="convenio-card">
+                    <div class="convenio-card__placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta section">
+        <div class="container">
+            <div class="cta__container">
+                <div class="cta__content">
+                    <h2 class="cta__title">Formá parte de nuestra comunidad educativa</h2>
+                    <p class="cta__description">
+                        Descubrí cómo podemos acompañar el desarrollo de tu hijo en un ambiente de excelencia académica
+                    </p>
+                </div>
+                <div class="cta__buttons">
+                    <a href="#contacto" class="button button--white">Contactanos</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact section" id="contacto">
+        <div class="container">
+            <div class="contact__container">
+                <div class="contact__info">
+                    <span class="section__subtitle">Contacto</span>
+                    <h2 class="section__title">Estamos para ayudarte</h2>
+                    <p class="contact__description">
+                        Nos encantaría conocerte y responder todas tus consultas sobre nuestra propuesta educativa.
+                    </p>
                     
-                    <div class="info-item">
-                        <div class="info-icon">📍</div>
-                        <div>
-                            <h4>Dirección</h4>
-                            <p>Buenos Aires, Argentina</p>
+                    <div class="contact__details">
+                        <div class="contact__item">
+                            <div class="contact__icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4>Dirección</h4>
+                                <p>Buenos Aires, Argentina</p>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-icon">📧</div>
-                        <div>
-                            <h4>Email</h4>
-                            <p>info@colegiodelsolar.edu.ar</p>
+                        
+                        <div class="contact__item">
+                            <div class="contact__icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4>Teléfono</h4>
+                                <p>+54 (11) xxxx-xxxx</p>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-icon">📞</div>
-                        <div>
-                            <h4>Teléfono</h4>
-                            <p>Consultar en la institución</p>
+                        
+                        <div class="contact__item">
+                            <div class="contact__icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4>Email</h4>
+                                <p>info@colegiodelsolar.edu.ar</p>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="social-links">
-                        <a href="https://www.facebook.com/colegiosdelsolar" target="_blank" aria-label="Facebook">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                            </svg>
-                        </a>
-                        <a href="https://www.instagram.com/delsolarschool/" target="_blank" aria-label="Instagram">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                            </svg>
-                        </a>
-                        <a href="https://www.youtube.com/channel/UCLP0RYlJofuLpfesXCkbk4w" target="_blank" aria-label="YouTube">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                            </svg>
-                        </a>
                     </div>
                 </div>
-
-                <form class="contacto-form">
-                    <div class="form-group">
-                        <label for="nombre">Nombre completo</label>
-                        <input type="text" id="nombre" name="nombre" required>
+                
+                <form class="contact__form">
+                    <div class="form__group">
+                        <input type="text" class="form__input" placeholder="Nombre completo" required>
                     </div>
-
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
+                    <div class="form__group">
+                        <input type="email" class="form__input" placeholder="Email" required>
                     </div>
-
-                    <div class="form-group">
-                        <label for="telefono">Teléfono</label>
-                        <input type="tel" id="telefono" name="telefono">
+                    <div class="form__group">
+                        <input type="tel" class="form__input" placeholder="Teléfono" required>
                     </div>
-
-                    <div class="form-group">
-                        <label for="mensaje">Mensaje</label>
-                        <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
+                    <div class="form__group">
+                        <textarea class="form__input form__textarea" placeholder="Mensaje" rows="5" required></textarea>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+                    <button type="submit" class="button button--primary button--full">Enviar mensaje</button>
                 </form>
             </div>
         </div>
@@ -374,45 +598,72 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-col">
-                    <h3>Colegio del Solar</h3>
-                    <p>En un marco educativo bilingüe, asumimos desde los distintos niveles de la Educación el compromiso de brindar a los alumnos una enseñanza que promueve situaciones de aprendizaje a través de todos sus proyectos.</p>
-                </div>
-
-                <div class="footer-col">
-                    <h4>Enlaces Rápidos</h4>
-                    <ul>
-                        <li><a href="#inicio">Inicio</a></li>
-                        <li><a href="#institucional">Institucional</a></li>
-                        <li><a href="#niveles">Niveles</a></li>
-                        <li><a href="#proyectos">Proyectos</a></li>
-                        <li><a href="#contacto">Contacto</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-col">
-                    <h4>Niveles Educativos</h4>
-                    <ul>
-                        <li><a href="nivel-inicial.html">Nivel Inicial</a></li>
-                        <li><a href="nivel-primario.html">Educación Primaria</a></li>
-                        <li><a href="nivel-secundario.html">Educación Secundaria</a></li>
-                        <li><a href="nivel-especial.html">Educación Especial</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-col">
-                    <h4>Newsletter</h4>
-                    <p>Suscribite a nuestras novedades</p>
-                    <form class="newsletter-form">
-                        <input type="email" placeholder="Tu email" required>
-                        <button type="submit">Enviar</button>
-                    </form>
+            <div class="footer__container">
+                <div class="footer__content">
+                    <div class="footer__column">
+                        <h3 class="footer__title">Colegio Del Solar</h3>
+                        <p class="footer__description">
+                            Educación bilingüe de excelencia comprometida con el desarrollo integral de cada alumno.
+                        </p>
+                        <div class="footer__social">
+                            <a href="https://www.facebook.com/colegiosdelsolar" target="_blank" class="footer__social-link" aria-label="Facebook">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                            </a>
+                            <a href="https://www.instagram.com/delsolarschool/" target="_blank" class="footer__social-link" aria-label="Instagram">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                </svg>
+                            </a>
+                            <a href="https://www.youtube.com/channel/UCLP0RYlJofuLpfesXCkbk4w" target="_blank" class="footer__social-link" aria-label="YouTube">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer__column">
+                        <h4 class="footer__column-title">Enlaces</h4>
+                        <ul class="footer__links">
+                            <li><a href="#inicio">Inicio</a></li>
+                            <li><a href="#nosotros">Nosotros</a></li>
+                            <li><a href="#niveles">Niveles</a></li>
+                            <li><a href="#proyectos">Proyectos</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer__column">
+                        <h4 class="footer__column-title">Niveles Educativos</h4>
+                        <ul class="footer__links">
+                            <li><a href="#">Nivel Inicial</a></li>
+                            <li><a href="#">Educación Primaria</a></li>
+                            <li><a href="#">Educación Secundaria</a></li>
+                            <li><a href="#">Educación Especial</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer__column">
+                        <h4 class="footer__column-title">Newsletter</h4>
+                        <p class="footer__newsletter-text">Recibí nuestras novedades</p>
+                        <form class="footer__newsletter">
+                            <input type="email" placeholder="Tu email" class="footer__newsletter-input" required>
+                            <button type="submit" class="footer__newsletter-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2024 Colegio del Solar. Todos los derechos reservados.</p>
+            
+            <div class="footer__bottom">
+                <p class="footer__copy">
+                    &copy; 2025 Colegio Del Solar. Todos los derechos reservados.
+                </p>
             </div>
         </div>
     </footer>

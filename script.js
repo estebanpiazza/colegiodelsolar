@@ -1,111 +1,120 @@
-// ===================================
-// Navegación y Menú Móvil
-// ===================================
-const menuToggle = document.querySelector('.menu-toggle');
-const navMenu = document.querySelector('.nav-menu');
-const navLinks = document.querySelectorAll('.nav-link');
-const header = document.querySelector('.header');
+// ===== MOBILE MENU =====
+const navMenu = document.getElementById('nav-menu');
+const navToggle = document.getElementById('nav-toggle');
+const navClose = document.getElementById('nav-close');
+const navLinks = document.querySelectorAll('.nav__link');
 
-// Toggle menú móvil
-menuToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-    
-    // Animación del icono hamburguesa
-    const spans = menuToggle.querySelectorAll('span');
-    if (navMenu.classList.contains('active')) {
-        spans[0].style.transform = 'rotate(45deg) translateY(8px)';
-        spans[1].style.opacity = '0';
-        spans[2].style.transform = 'rotate(-45deg) translateY(-8px)';
-    } else {
-        spans[0].style.transform = 'none';
-        spans[1].style.opacity = '1';
-        spans[2].style.transform = 'none';
-    }
-});
+// Show menu
+if (navToggle) {
+    navToggle.addEventListener('click', () => {
+        navMenu.classList.add('show-menu');
+    });
+}
 
-// Cerrar menú al hacer click en un enlace
+// Hide menu
+if (navClose) {
+    navClose.addEventListener('click', () => {
+        navMenu.classList.remove('show-menu');
+    });
+}
+
+// Hide menu when clicking on nav links
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
-        navMenu.classList.remove('active');
-        const spans = menuToggle.querySelectorAll('span');
-        spans[0].style.transform = 'none';
-        spans[1].style.opacity = '1';
-        spans[2].style.transform = 'none';
+        navMenu.classList.remove('show-menu');
     });
 });
 
-// ===================================
-// Scroll Effects
-// ===================================
-let lastScroll = 0;
-
-window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-    
-    // Header shadow al hacer scroll
-    if (currentScroll > 50) {
-        header.classList.add('scrolled');
+// ===== HEADER SCROLL =====
+function scrollHeader() {
+    const header = document.getElementById('header');
+    if (window.scrollY >= 50) {
+        header.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
     } else {
-        header.classList.remove('scrolled');
+        header.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
     }
-    
-    lastScroll = currentScroll;
-});
+}
 
-// ===================================
-// Active Navigation Link
-// ===================================
+window.addEventListener('scroll', scrollHeader);
+
+// ===== ACTIVE LINK ON SCROLL =====
 const sections = document.querySelectorAll('section[id]');
 
-function updateActiveNav() {
-    const scrollPosition = window.pageYOffset + 100;
-    
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.offsetHeight;
-        const sectionId = section.getAttribute('id');
-        
-        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${sectionId}`) {
-                    link.classList.add('active');
-                }
-            });
+function scrollActive() {
+    const scrollY = window.pageYOffset;
+
+    sections.forEach(current => {
+        const sectionHeight = current.offsetHeight;
+        const sectionTop = current.offsetTop - 100;
+        const sectionId = current.getAttribute('id');
+
+        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+            document.querySelector('.nav__link[href*=' + sectionId + ']')?.classList.add('active-link');
+        } else {
+            document.querySelector('.nav__link[href*=' + sectionId + ']')?.classList.remove('active-link');
         }
     });
 }
 
-window.addEventListener('scroll', updateActiveNav);
+window.addEventListener('scroll', scrollActive);
 
-// ===================================
-// Smooth Scroll
-// ===================================
-navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        const href = link.getAttribute('href');
+// ===== SMOOTH SCROLL =====
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
         
-        if (href.startsWith('#')) {
-            e.preventDefault();
-            const targetId = href.substring(1);
-            const targetSection = document.getElementById(targetId);
+        if (target) {
+            const headerHeight = document.getElementById('header').offsetHeight;
+            const targetPosition = target.offsetTop - headerHeight;
             
-            if (targetSection) {
-                const headerHeight = header.offsetHeight;
-                const targetPosition = targetSection.offsetTop - headerHeight;
-                
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            }
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
         }
     });
 });
 
-// ===================================
-// Animaciones al hacer scroll
-// ===================================
+// ===== FORM SUBMISSION =====
+const contactForm = document.querySelector('.contact__form');
+
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Get form values
+        const formData = new FormData(contactForm);
+        
+        // Here you would typically send the data to a server
+        // For now, we'll just show an alert
+        alert('¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.');
+        
+        // Reset form
+        contactForm.reset();
+    });
+}
+
+// ===== NEWSLETTER SUBSCRIPTION =====
+const newsletterForm = document.querySelector('.footer__newsletter');
+
+if (newsletterForm) {
+    newsletterForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const emailInput = newsletterForm.querySelector('input[type="email"]');
+        const email = emailInput.value;
+        
+        // Here you would typically send the email to a server
+        // For now, we'll just show an alert
+        if (email) {
+            alert('¡Gracias por suscribirte a nuestro newsletter!');
+            emailInput.value = '';
+        }
+    });
+}
+
+// ===== INTERSECTION OBSERVER FOR ANIMATIONS =====
 const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -50px 0px'
@@ -115,204 +124,137 @@ const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+            entry.target.style.animation = 'fadeInUp 0.8s ease forwards';
         }
     });
 }, observerOptions);
 
-// Elementos a animar
-const animateElements = document.querySelectorAll('.nivel-card, .proyecto-card, .novedad-card, .feature-card');
-animateElements.forEach(element => {
-    element.style.opacity = '0';
-    element.style.transform = 'translateY(30px)';
-    element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(element);
+// Observe all sections and cards
+document.querySelectorAll('.section, .level-card, .project-card, .feature').forEach((el) => {
+    observer.observe(el);
 });
 
-// ===================================
-// Formulario de Contacto
-// ===================================
-const contactForm = document.querySelector('.contacto-form');
-
-if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        // Obtener valores del formulario
-        const nombre = document.getElementById('nombre').value;
-        const email = document.getElementById('email').value;
-        const telefono = document.getElementById('telefono').value;
-        const mensaje = document.getElementById('mensaje').value;
-        
-        // Aquí puedes agregar la lógica para enviar el formulario
-        // Por ejemplo, usando fetch() para enviar a un servidor
-        
-        // Mensaje de confirmación temporal
-        alert('¡Gracias por contactarnos! Responderemos a la brevedad.');
-        
-        // Limpiar formulario
-        contactForm.reset();
-    });
+// ===== DYNAMIC YEAR FOR FOOTER =====
+const footerCopy = document.querySelector('.footer__copy');
+if (footerCopy) {
+    const currentYear = new Date().getFullYear();
+    footerCopy.innerHTML = `&copy; ${currentYear} Colegio Del Solar. Todos los derechos reservados.`;
 }
 
-// ===================================
-// Newsletter Form
-// ===================================
-const newsletterForm = document.querySelector('.newsletter-form');
+// ===== SCROLL TO TOP FUNCTIONALITY =====
+let scrollTopBtn = null;
 
-if (newsletterForm) {
-    newsletterForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const emailInput = newsletterForm.querySelector('input[type="email"]');
-        
-        if (emailInput.value) {
-            alert('¡Gracias por suscribirte a nuestro newsletter!');
-            newsletterForm.reset();
-        }
-    });
-}
-
-// ===================================
-// Parallax Effect en Hero
-// ===================================
-const hero = document.querySelector('.hero');
-
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    if (hero && scrolled < hero.offsetHeight) {
-        const heroContent = document.querySelector('.hero-content');
-        if (heroContent) {
-            heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
-            heroContent.style.opacity = 1 - (scrolled / hero.offsetHeight);
-        }
-    }
-});
-
-// ===================================
-// Contador de números (para estadísticas si se agregan)
-// ===================================
-function animateCounter(element, target, duration = 2000) {
-    let start = 0;
-    const increment = target / (duration / 16);
+function createScrollTopButton() {
+    scrollTopBtn = document.createElement('button');
+    scrollTopBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    `;
+    scrollTopBtn.className = 'scroll-top';
+    scrollTopBtn.setAttribute('aria-label', 'Volver arriba');
     
-    const timer = setInterval(() => {
-        start += increment;
-        if (start >= target) {
-            element.textContent = target;
-            clearInterval(timer);
-        } else {
-            element.textContent = Math.floor(start);
-        }
-    }, 16);
-}
-
-// ===================================
-// Lazy Loading de Imágenes
-// ===================================
-const images = document.querySelectorAll('img[data-src]');
-
-const imageObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const img = entry.target;
-            img.src = img.dataset.src;
-            img.removeAttribute('data-src');
-            imageObserver.unobserve(img);
-        }
-    });
-});
-
-images.forEach(img => imageObserver.observe(img));
-
-// ===================================
-// Botón volver arriba (opcional)
-// ===================================
-function createBackToTopButton() {
-    const button = document.createElement('button');
-    button.innerHTML = '↑';
-    button.classList.add('back-to-top');
-    button.style.cssText = `
+    scrollTopBtn.style.cssText = `
         position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 50px;
-        height: 50px;
-        background: var(--primary-color);
+        bottom: 2rem;
+        right: 2rem;
+        width: 3rem;
+        height: 3rem;
+        background-color: var(--primary-color);
         color: white;
         border: none;
         border-radius: 50%;
-        font-size: 1.5rem;
+        display: none;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
-        opacity: 0;
-        visibility: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
         z-index: 999;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     `;
     
-    document.body.appendChild(button);
+    document.body.appendChild(scrollTopBtn);
     
-    window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 500) {
-            button.style.opacity = '1';
-            button.style.visibility = 'visible';
-        } else {
-            button.style.opacity = '0';
-            button.style.visibility = 'hidden';
-        }
-    });
-    
-    button.addEventListener('click', () => {
+    scrollTopBtn.addEventListener('click', () => {
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
         });
     });
-    
-    button.addEventListener('mouseenter', () => {
-        button.style.transform = 'translateY(-5px)';
-        button.style.boxShadow = '0 6px 20px rgba(0,0,0,0.2)';
-    });
-    
-    button.addEventListener('mouseleave', () => {
-        button.style.transform = 'translateY(0)';
-        button.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-    });
 }
 
-// Crear botón al cargar la página
-createBackToTopButton();
+function toggleScrollTopButton() {
+    if (!scrollTopBtn) return;
+    
+    if (window.scrollY > 500) {
+        scrollTopBtn.style.display = 'flex';
+    } else {
+        scrollTopBtn.style.display = 'none';
+    }
+}
 
-// ===================================
-// Preloader (opcional)
-// ===================================
+// Create scroll to top button
+createScrollTopButton();
+window.addEventListener('scroll', toggleScrollTopButton);
+
+// ===== LOADING ANIMATION =====
 window.addEventListener('load', () => {
-    document.body.classList.add('loaded');
+    document.body.style.opacity = '0';
+    setTimeout(() => {
+        document.body.style.transition = 'opacity 0.5s ease';
+        document.body.style.opacity = '1';
+    }, 100);
 });
 
-// ===================================
-// Animación de escritura para el título del hero
-// ===================================
-function typeWriter(element, text, speed = 100) {
-    let i = 0;
-    element.textContent = '';
-    
-    function type() {
-        if (i < text.length) {
-            element.textContent += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
-        }
+// ===== TESTIMONIALS SLIDER =====
+const testimonialsSlider = document.querySelector('.testimonials__slider');
+const arrowLeft = document.querySelector('.testimonials__arrow--left');
+const arrowRight = document.querySelector('.testimonials__arrow--right');
+
+if (testimonialsSlider && arrowLeft && arrowRight) {
+    let currentIndex = 0;
+    const testimonialCards = document.querySelectorAll('.testimonial-card');
+    const totalCards = testimonialCards.length;
+
+    // Only show arrows if there are more cards than visible
+    if (window.innerWidth > 968 && totalCards <= 3) {
+        arrowLeft.style.display = 'none';
+        arrowRight.style.display = 'none';
     }
-    
-    type();
+
+    arrowRight.addEventListener('click', () => {
+        if (currentIndex < totalCards - 3) {
+            currentIndex++;
+            updateSlider();
+        }
+    });
+
+    arrowLeft.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateSlider();
+        }
+    });
+
+    function updateSlider() {
+        const cardWidth = testimonialCards[0].offsetWidth;
+        const gap = 24; // var(--spacing-lg) in pixels
+        const offset = -(currentIndex * (cardWidth + gap));
+        testimonialsSlider.style.transform = `translateX(${offset}px)`;
+        testimonialsSlider.style.transition = 'transform 0.5s ease';
+    }
 }
 
-// Activar al cargar la página si se desea
-// const heroTitle = document.querySelector('.hero-title span');
-// if (heroTitle) {
-//     const originalText = heroTitle.textContent;
-//     typeWriter(heroTitle, originalText, 80);
-// }
+// ===== VIDEO CONTROLS =====
+const playButtons = document.querySelectorAll('.play-button');
+playButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Here you would implement video playback functionality
+        alert('Funcionalidad de video - Aquí se reproducirá el testimonio en video');
+    });
+});
 
-console.log('✅ Colegio del Solar - Website loaded successfully!');
+// ===== CONSOLE MESSAGE =====
+console.log('%c🎓 Colegio Del Solar', 'color: #1a365d; font-size: 24px; font-weight: bold;');
+console.log('%cSitio web desarrollado con HTML, CSS y JavaScript', 'color: #d4a574; font-size: 14px;');
