@@ -34,7 +34,7 @@
                     <li class="nav__item">
                         <a href="#convenios" class="nav__link">Convenios</a>
                     </li>
-                    <li class="nav__item">
+                    <li class="nav__item" hidden>
                         <a href="#blog" class="nav__link">Blog</a>
                     </li>
                     <li class="nav__item">
@@ -332,33 +332,35 @@
                     </svg>
                 </button>
 
-                <div class="testimonials__slider">
-                    <article class="testimonial-card">
-                        <div class="testimonial-card__video">
-                            <video controls>
-                                <source src="videosExAlumnos/WhatsApp Video 2020-03-08 at 12.30.47.mp4" type="video/mp4">
-                                Tu navegador no soporta la reproducción de videos.
-                            </video>
-                        </div>
-                    </article>
+                <div class="testimonials__viewport">
+                    <div class="testimonials__slider">
+                        <article class="testimonial-card">
+                            <div class="testimonial-card__video">
+                                <video controls preload="metadata">
+                                    <source src="videosExAlumnos/WhatsApp Video 2020-03-08 at 12.30.47.mp4" type="video/mp4">
+                                    Tu navegador no soporta la reproducción de videos.
+                                </video>
+                            </div>
+                        </article>
 
-                    <article class="testimonial-card">
-                        <div class="testimonial-card__video">
-                            <video controls>
-                                <source src="videosExAlumnos/WhatsApp Video 2020-03-13 at 11.50.58.mp4" type="video/mp4">
-                                Tu navegador no soporta la reproducción de videos.
-                            </video>
-                        </div>
-                    </article>
+                        <article class="testimonial-card">
+                            <div class="testimonial-card__video">
+                                <video controls preload="metadata">
+                                    <source src="videosExAlumnos/WhatsApp Video 2020-03-13 at 11.50.58.mp4" type="video/mp4">
+                                    Tu navegador no soporta la reproducción de videos.
+                                </video>
+                            </div>
+                        </article>
 
-                    <article class="testimonial-card">
-                        <div class="testimonial-card__video">
-                            <video controls>
-                                <source src="videosExAlumnos/WhatsApp Video 2020-03-13 at 11.51.07.mp4" type="video/mp4">
-                                Tu navegador no soporta la reproducción de videos.
-                            </video>
-                        </div>
-                    </article>
+                        <article class="testimonial-card">
+                            <div class="testimonial-card__video">
+                                <video controls preload="metadata">
+                                    <source src="videosExAlumnos/WhatsApp Video 2020-03-13 at 11.51.07.mp4" type="video/mp4">
+                                    Tu navegador no soporta la reproducción de videos.
+                                </video>
+                            </div>
+                        </article>
+                    </div>
                 </div>
 
                 <button class="testimonials__arrow testimonials__arrow--right" aria-label="Siguiente">
@@ -426,7 +428,7 @@
     </section>
 
     <!-- Blog Section -->
-    <section class="blog section" id="blog">
+    <section class="blog section" id="blog" hidden>
         <div class="container">
             <span class="section__subtitle">Noticias y Novedades</span>
             <h2 class="section__title">Nuestro Blog</h2>
@@ -526,20 +528,63 @@
                     </div>
                 </div>
                 
-                <form class="contact__form">
+                <form
+                    class="contact__form"
+                    action="https://formsubmit.co/ajax/info@colegiodelsolar.edu.ar"
+                    method="POST"
+                >
+                    <input type="hidden" name="_subject" value="Nueva consulta desde la landing del Colegio Del Solar">
+                    <input type="hidden" name="_template" value="table">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="text" name="_honey" class="form__honey" tabindex="-1" autocomplete="off" aria-hidden="true">
                     <div class="form__group">
-                        <input type="text" class="form__input" placeholder="Nombre completo" required>
+                        <label class="form__label" for="contact-name">Nombre completo</label>
+                        <input
+                            id="contact-name"
+                            type="text"
+                            name="nombre"
+                            class="form__input"
+                            placeholder="Nombre completo"
+                            required
+                        >
                     </div>
                     <div class="form__group">
-                        <input type="email" class="form__input" placeholder="Email" required>
+                        <label class="form__label" for="contact-email">Email</label>
+                        <input
+                            id="contact-email"
+                            type="email"
+                            name="email"
+                            class="form__input"
+                            placeholder="Email"
+                            required
+                        >
                     </div>
                     <div class="form__group">
-                        <input type="tel" class="form__input" placeholder="Teléfono" required>
+                        <label class="form__label" for="contact-phone">Telefono</label>
+                        <input
+                            id="contact-phone"
+                            type="tel"
+                            name="telefono"
+                            class="form__input"
+                            placeholder="Telefono"
+                            required
+                        >
                     </div>
                     <div class="form__group">
-                        <textarea class="form__input form__textarea" placeholder="Mensaje" rows="5" required></textarea>
+                        <label class="form__label" for="contact-message">Mensaje</label>
+                        <textarea
+                            id="contact-message"
+                            name="mensaje"
+                            class="form__input form__textarea"
+                            placeholder="Contanos en que podemos ayudarte"
+                            rows="5"
+                            required
+                        ></textarea>
                     </div>
-                    <button type="submit" class="button button--primary button--full">Enviar mensaje</button>
+                    <button type="submit" class="button button--primary button--full">
+                        <span class="contact__submit-text">Enviar mensaje</span>
+                    </button>
+                    <p class="form__status" role="status" aria-live="polite"></p>
                 </form>
             </div>
         </div>

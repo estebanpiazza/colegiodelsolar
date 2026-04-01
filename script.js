@@ -80,11 +80,80 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 const contactForm = document.querySelector('.contact__form');
 
 if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    const contactStatus = contactForm.querySelector('.form__status');
+    const contactSubmitButton = contactForm.querySelector('button[type="submit"]');
+    const contactSubmitText = contactForm.querySelector('.contact__submit-text');
+
+    const setContactStatus = (message, state = '') => {
+        if (!contactStatus) return;
+
+        contactStatus.textContent = message;
+        contactStatus.classList.remove('is-loading', 'is-success', 'is-error');
+
+        if (state) {
+            contactStatus.classList.add(`is-${state}`);
+        }
+    };
+
+    contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        if (!contactForm.reportValidity()) {
+            return;
+        }
+
+        const formData = new FormData(contactForm);
+        formData.set('_url', window.location.href);
+
+        if (contactSubmitButton) {
+            contactSubmitButton.disabled = true;
+        }
+
+        if (contactSubmitText) {
+            contactSubmitText.textContent = 'Enviando...';
+        }
+
+        contactForm.setAttribute('aria-busy', 'true');
+        setContactStatus('Enviando tu mensaje...', 'loading');
+
+        try {
+            const response = await fetch(contactForm.action, {
+                method: contactForm.method,
+                body: formData,
+                headers: {
+                    Accept: 'application/json'
+                }
+            });
+
+            const data = await response.json().catch(() => null);
+
+            if (!response.ok) {
+                throw new Error(data?.message || 'No pudimos enviar el mensaje. Intenta nuevamente en unos minutos.');
+            }
+
+            contactForm.reset();
+            setContactStatus('Mensaje enviado. Te responderemos a la brevedad.', 'success');
+        } catch (error) {
+            setContactStatus(
+                error.message || 'No pudimos enviar el mensaje. Intenta nuevamente en unos minutos.',
+                'error'
+            );
+        } finally {
+            contactForm.removeAttribute('aria-busy');
+
+            if (contactSubmitButton) {
+                contactSubmitButton.disabled = false;
+            }
+
+            if (contactSubmitText) {
+                contactSubmitText.textContent = 'Enviar mensaje';
+            }
+        }
+
+        return;
         
         // Get form values
-        const formData = new FormData(contactForm);
+        const legacyFormData = new FormData(contactForm);
         
         // Here you would typically send the data to a server
         // For now, we'll just show an alert
@@ -120,17 +189,18 @@ const observerOptions = {
     rootMargin: '0px 0px -50px 0px'
 };
 
-const observer = new IntersectionObserver((entries) => {
+const observer = new IntersectionObserver((entries, revealObserver) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.animation = 'fadeInUp 0.8s ease forwards';
+            entry.target.classList.add('is-visible');
+            revealObserver.unobserve(entry.target);
         }
     });
 }, observerOptions);
 
-// Observe all sections and cards
-document.querySelectorAll('.section, .level-card, .project-card, .feature').forEach((el) => {
+// Observe cards once so the animation doesn't restart while scrolling
+document.querySelectorAll('.feature, .level-card, .project-card, .testimonial-card, .convenio-card, .contact__item').forEach((el) => {
+    el.classList.add('scroll-reveal');
     observer.observe(el);
 });
 
@@ -197,64 +267,97 @@ function toggleScrollTopButton() {
 createScrollTopButton();
 window.addEventListener('scroll', toggleScrollTopButton);
 
-// ===== LOADING ANIMATION =====
-window.addEventListener('load', () => {
-    document.body.style.opacity = '0';
-    setTimeout(() => {
-        document.body.style.transition = 'opacity 0.5s ease';
-        document.body.style.opacity = '1';
-    }, 100);
-});
-
 // ===== TESTIMONIALS SLIDER =====
+const testimonialsSection = document.querySelector('.testimonials');
+const testimonialsViewport = document.querySelector('.testimonials__viewport');
 const testimonialsSlider = document.querySelector('.testimonials__slider');
 const arrowLeft = document.querySelector('.testimonials__arrow--left');
 const arrowRight = document.querySelector('.testimonials__arrow--right');
 
-if (testimonialsSlider && arrowLeft && arrowRight) {
+if (testimonialsSection && testimonialsViewport && testimonialsSlider && arrowLeft && arrowRight) {
     let currentIndex = 0;
-    const testimonialCards = document.querySelectorAll('.testimonial-card');
-    const totalCards = testimonialCards.length;
+    const testimonialCards = Array.from(testimonialsSlider.querySelectorAll('.testimonial-card'));
 
-    // Only show arrows if there are more cards than visible
-    if (window.innerWidth > 968 && totalCards <= 3) {
-        arrowLeft.style.display = 'none';
-        arrowRight.style.display = 'none';
-    }
+    const getSlidesPerView = () => {
+        const value = Number.parseInt(
+            getComputedStyle(testimonialsSection).getPropertyValue('--slides-per-view'),
+            10
+        );
+
+        return Number.isNaN(value) ? 1 : value;
+    };
+
+    const isMobileSlider = () => window.innerWidth <= 768;
+
+    const getMaxIndex = () => Math.max(0, testimonialCards.length - getSlidesPerView());
+
+    const updateArrows = () => {
+        const maxIndex = getMaxIndex();
+        const hasOverflow = testimonialCards.length > getSlidesPerView();
+        const shouldShowArrows = hasOverflow && !isMobileSlider();
+
+        arrowLeft.style.display = shouldShowArrows ? 'flex' : 'none';
+        arrowRight.style.display = shouldShowArrows ? 'flex' : 'none';
+
+        arrowLeft.disabled = currentIndex === 0 || !hasOverflow;
+        arrowRight.disabled = currentIndex >= maxIndex || !hasOverflow;
+    };
+
+    const updateSlider = () => {
+        const maxIndex = getMaxIndex();
+        currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+
+        if (isMobileSlider()) {
+            testimonialsSlider.style.transform = 'translateX(0)';
+            testimonialsViewport.scrollLeft = 0;
+            updateArrows();
+            return;
+        }
+
+        const firstCard = testimonialCards[0];
+        if (!firstCard) return;
+
+        const gap = Number.parseFloat(getComputedStyle(testimonialsSlider).columnGap || getComputedStyle(testimonialsSlider).gap) || 0;
+        const offset = currentIndex * (firstCard.offsetWidth + gap);
+        testimonialsSlider.style.transform = `translateX(-${offset}px)`;
+
+        updateArrows();
+    };
 
     arrowRight.addEventListener('click', () => {
-        if (currentIndex < totalCards - 3) {
-            currentIndex++;
+        if (currentIndex < getMaxIndex()) {
+            currentIndex += 1;
             updateSlider();
         }
     });
 
     arrowLeft.addEventListener('click', () => {
         if (currentIndex > 0) {
-            currentIndex--;
+            currentIndex -= 1;
             updateSlider();
         }
     });
 
-    function updateSlider() {
-        const cardWidth = testimonialCards[0].offsetWidth;
-        const gap = 24; // var(--spacing-lg) in pixels
-        const offset = -(currentIndex * (cardWidth + gap));
-        testimonialsSlider.style.transform = `translateX(${offset}px)`;
-        testimonialsSlider.style.transition = 'transform 0.5s ease';
-    }
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(updateSlider, 120);
+    });
+
+    updateSlider();
 }
 
 // ===== BLOG - GOOGLE SHEETS INTEGRATION =====
 const GSHEET_ID = ''; // Ingresá aquí el ID de tu Google Sheet publicado como CSV
 
 async function loadBlogPosts() {
+    const blogSection = document.getElementById('blog');
     const blogContainer = document.getElementById('blog-container');
     const blogLoading = document.getElementById('blog-loading');
     const blogEmpty = document.getElementById('blog-empty');
     const blogError = document.getElementById('blog-error');
     
-    if (!blogContainer) return;
+    if (!blogContainer || blogSection?.hidden) return;
     
     // Si no hay ID configurado, mostrar empty state
     if (!GSHEET_ID) {
