@@ -93,6 +93,19 @@ function updateActiveLink() {
 
 let scrollTicking = false
 
+const scrollTopButton = document.getElementById('scroll-top')
+
+function updateScrollTopButton() {
+    if (!scrollTopButton) return
+    scrollTopButton.classList.toggle('is-visible', window.scrollY > 400)
+}
+
+if (scrollTopButton) {
+    scrollTopButton.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
+    })
+}
+
 function syncOnScroll() {
     if (scrollTicking) return
 
@@ -100,6 +113,7 @@ function syncOnScroll() {
     window.requestAnimationFrame(() => {
         updateHeaderState()
         updateActiveLink()
+        updateScrollTopButton()
         scrollTicking = false
     })
 }
