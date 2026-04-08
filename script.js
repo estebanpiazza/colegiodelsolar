@@ -1,120 +1,180 @@
-// ===== MOBILE MENU =====
-const navMenu = document.getElementById('nav-menu');
-const navToggle = document.getElementById('nav-toggle');
-const navClose = document.getElementById('nav-close');
-const navLinks = document.querySelectorAll('.nav__link');
+const header = document.getElementById('header')
+const navMenu = document.getElementById('nav-menu')
+const navToggle = document.getElementById('nav-toggle')
+const navClose = document.getElementById('nav-close')
+const navLinks = Array.from(document.querySelectorAll('.nav__link[href^="#"]'))
+const sections = Array.from(document.querySelectorAll('section[id]')).filter((section) => !section.hidden)
+const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+const mobileQuery = window.matchMedia('(max-width: 768px)')
+const navBreakpointQuery = window.matchMedia('(max-width: 980px)')
 
-// Show menu
-if (navToggle) {
-    navToggle.addEventListener('click', () => {
-        navMenu.classList.add('show-menu');
-    });
-}
+function bindMediaChange(mediaQuery, handler) {
+    if (typeof mediaQuery.addEventListener === 'function') {
+        mediaQuery.addEventListener('change', handler)
+        return
+    }
 
-// Hide menu
-if (navClose) {
-    navClose.addEventListener('click', () => {
-        navMenu.classList.remove('show-menu');
-    });
-}
-
-// Hide menu when clicking on nav links
-navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        navMenu.classList.remove('show-menu');
-    });
-});
-
-// ===== HEADER SCROLL =====
-function scrollHeader() {
-    const header = document.getElementById('header');
-    if (window.scrollY >= 50) {
-        header.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-    } else {
-        header.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+    if (typeof mediaQuery.addListener === 'function') {
+        mediaQuery.addListener(handler)
     }
 }
 
-window.addEventListener('scroll', scrollHeader);
-
-// ===== ACTIVE LINK ON SCROLL =====
-const sections = document.querySelectorAll('section[id]');
-
-function scrollActive() {
-    const scrollY = window.pageYOffset;
-
-    sections.forEach(current => {
-        const sectionHeight = current.offsetHeight;
-        const sectionTop = current.offsetTop - 100;
-        const sectionId = current.getAttribute('id');
-
-        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-            document.querySelector('.nav__link[href*=' + sectionId + ']')?.classList.add('active-link');
-        } else {
-            document.querySelector('.nav__link[href*=' + sectionId + ']')?.classList.remove('active-link');
-        }
-    });
+function prefersReducedMotion() {
+    return reduceMotionQuery.matches
 }
 
-window.addEventListener('scroll', scrollActive);
+function isSmallScreen() {
+    return mobileQuery.matches
+}
 
-// ===== SMOOTH SCROLL =====
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        
-        if (target) {
-            const headerHeight = document.getElementById('header').offsetHeight;
-            const targetPosition = target.offsetTop - headerHeight;
-            
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
+function setMenuState(isOpen) {
+    if (!navMenu) return
+
+    navMenu.classList.toggle('show-menu', isOpen)
+    navMenu.setAttribute('aria-hidden', String(!isOpen))
+    document.body.classList.toggle('menu-open', isOpen)
+
+    if (navToggle) {
+        navToggle.setAttribute('aria-expanded', String(isOpen))
+    }
+}
+
+if (navMenu) {
+    navMenu.setAttribute('aria-hidden', 'true')
+}
+
+if (navToggle) {
+    navToggle.setAttribute('aria-expanded', 'false')
+    navToggle.addEventListener('click', () => setMenuState(true))
+}
+
+if (navClose) {
+    navClose.addEventListener('click', () => setMenuState(false))
+}
+
+navLinks.forEach((link) => {
+    link.addEventListener('click', () => setMenuState(false))
+})
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        setMenuState(false)
+    }
+})
+
+bindMediaChange(navBreakpointQuery, (event) => {
+    if (!event.matches) {
+        setMenuState(false)
+    }
+})
+
+function updateHeaderState() {
+    if (!header) return
+    header.classList.toggle('scrolled', window.scrollY >= 20)
+}
+
+function updateActiveLink() {
+    if (!navLinks.length) return
+
+    const currentPosition = window.scrollY + (header?.offsetHeight || 0) + 120
+    let activeId = sections[0]?.id || ''
+
+    sections.forEach((section) => {
+        if (currentPosition >= section.offsetTop) {
+            activeId = section.id
         }
-    });
-});
+    })
 
-// ===== FORM SUBMISSION =====
-const contactForm = document.querySelector('.contact__form');
+    navLinks.forEach((link) => {
+        const targetId = link.getAttribute('href')?.slice(1) || ''
+        link.classList.toggle('active-link', targetId === activeId)
+    })
+}
+
+let scrollTicking = false
+
+function syncOnScroll() {
+    if (scrollTicking) return
+
+    scrollTicking = true
+    window.requestAnimationFrame(() => {
+        updateHeaderState()
+        updateActiveLink()
+        scrollTicking = false
+    })
+}
+
+window.addEventListener('scroll', syncOnScroll, { passive: true })
+updateHeaderState()
+updateActiveLink()
+
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    const targetSelector = anchor.getAttribute('href')
+
+    if (!targetSelector || targetSelector === '#') return
+
+    anchor.addEventListener('click', (event) => {
+        const target = document.querySelector(targetSelector)
+        if (!target) return
+
+        event.preventDefault()
+
+        const headerOffset = header?.offsetHeight || 0
+        const top = target.getBoundingClientRect().top + window.scrollY - headerOffset - 12
+
+        window.scrollTo({
+            top,
+            behavior: prefersReducedMotion() ? 'auto' : 'smooth'
+        })
+    })
+})
+
+const contactForm = document.querySelector('.contact__form')
 
 if (contactForm) {
-    const contactStatus = contactForm.querySelector('.form__status');
-    const contactSubmitButton = contactForm.querySelector('button[type="submit"]');
-    const contactSubmitText = contactForm.querySelector('.contact__submit-text');
+    const contactStatus = contactForm.querySelector('.form__status')
+    const contactSubmitButton = contactForm.querySelector('button[type="submit"]')
+    const contactSubmitText = contactForm.querySelector('.contact__submit-text')
 
     const setContactStatus = (message, state = '') => {
-        if (!contactStatus) return;
+        if (!contactStatus) return
 
-        contactStatus.textContent = message;
-        contactStatus.classList.remove('is-loading', 'is-success', 'is-error');
+        contactStatus.textContent = message
+        contactStatus.classList.remove('is-loading', 'is-success', 'is-error')
 
         if (state) {
-            contactStatus.classList.add(`is-${state}`);
+            contactStatus.classList.add(`is-${state}`)
         }
-    };
+    }
 
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    contactForm.addEventListener('submit', async (event) => {
+        event.preventDefault()
 
         if (!contactForm.reportValidity()) {
-            return;
+            return
         }
 
-        const formData = new FormData(contactForm);
-        formData.set('_url', window.location.href);
+        const formData = new FormData(contactForm)
+        const honeypot = String(formData.get('_honey') || '').trim()
+
+        if (honeypot) {
+            contactForm.reset()
+            setContactStatus('Mensaje enviado. Te responderemos a la brevedad.', 'success')
+            return
+        }
+
+        formData.set('_url', window.location.href)
 
         if (contactSubmitButton) {
-            contactSubmitButton.disabled = true;
+            contactSubmitButton.disabled = true
         }
 
         if (contactSubmitText) {
-            contactSubmitText.textContent = 'Enviando...';
+            contactSubmitText.textContent = 'Enviando...'
         }
 
-        contactForm.setAttribute('aria-busy', 'true');
-        setContactStatus('Enviando tu mensaje...', 'loading');
+        contactForm.setAttribute('aria-busy', 'true')
+        setContactStatus('Enviando tu mensaje...', 'loading')
 
         try {
             const response = await fetch(contactForm.action, {
@@ -123,378 +183,284 @@ if (contactForm) {
                 headers: {
                     Accept: 'application/json'
                 }
-            });
+            })
 
-            const data = await response.json().catch(() => null);
+            const data = await response.json().catch(() => null)
 
             if (!response.ok) {
-                throw new Error(data?.message || 'No pudimos enviar el mensaje. Intenta nuevamente en unos minutos.');
+                throw new Error(data?.message || 'No pudimos enviar el mensaje. Intenta nuevamente en unos minutos.')
             }
 
-            contactForm.reset();
-            setContactStatus('Mensaje enviado. Te responderemos a la brevedad.', 'success');
+            contactForm.reset()
+            setContactStatus('Mensaje enviado. Te responderemos a la brevedad.', 'success')
         } catch (error) {
             setContactStatus(
-                error.message || 'No pudimos enviar el mensaje. Intenta nuevamente en unos minutos.',
+                error?.message || 'No pudimos enviar el mensaje. Intenta nuevamente en unos minutos.',
                 'error'
-            );
+            )
         } finally {
-            contactForm.removeAttribute('aria-busy');
+            contactForm.removeAttribute('aria-busy')
 
             if (contactSubmitButton) {
-                contactSubmitButton.disabled = false;
+                contactSubmitButton.disabled = false
             }
 
             if (contactSubmitText) {
-                contactSubmitText.textContent = 'Enviar mensaje';
+                contactSubmitText.textContent = 'Enviar mensaje'
             }
         }
-
-        return;
-        
-        // Get form values
-        const legacyFormData = new FormData(contactForm);
-        
-        // Here you would typically send the data to a server
-        // For now, we'll just show an alert
-        alert('¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.');
-        
-        // Reset form
-        contactForm.reset();
-    });
+    })
 }
 
-// ===== NEWSLETTER SUBSCRIPTION =====
-const newsletterForm = document.querySelector('.footer__newsletter');
+const revealElements = Array.from(document.querySelectorAll('[data-reveal]'))
+let revealObserver = null
 
-if (newsletterForm) {
-    newsletterForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const emailInput = newsletterForm.querySelector('input[type="email"]');
-        const email = emailInput.value;
-        
-        // Here you would typically send the email to a server
-        // For now, we'll just show an alert
-        if (email) {
-            alert('¡Gracias por suscribirte a nuestro newsletter!');
-            emailInput.value = '';
-        }
-    });
-}
+function setupRevealObserver() {
+    if (!revealElements.length) return
 
-// ===== INTERSECTION OBSERVER FOR ANIMATIONS =====
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries, revealObserver) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            revealObserver.unobserve(entry.target);
-        }
-    });
-}, observerOptions);
-
-// Observe cards once so the animation doesn't restart while scrolling
-document.querySelectorAll('.feature, .level-card, .project-card, .testimonial-card, .convenio-card, .contact__item').forEach((el) => {
-    el.classList.add('scroll-reveal');
-    observer.observe(el);
-});
-
-// ===== DYNAMIC YEAR FOR FOOTER =====
-const footerCopy = document.querySelector('.footer__copy');
-if (footerCopy) {
-    const currentYear = new Date().getFullYear();
-    footerCopy.innerHTML = `&copy; ${currentYear} Colegio Del Solar. Todos los derechos reservados.`;
-}
-
-// ===== SCROLL TO TOP FUNCTIONALITY =====
-let scrollTopBtn = null;
-
-function createScrollTopButton() {
-    scrollTopBtn = document.createElement('button');
-    scrollTopBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="18 15 12 9 6 15"></polyline>
-        </svg>
-    `;
-    scrollTopBtn.className = 'scroll-top';
-    scrollTopBtn.setAttribute('aria-label', 'Volver arriba');
-    
-    scrollTopBtn.style.cssText = `
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        width: 3rem;
-        height: 3rem;
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        z-index: 999;
-    `;
-    
-    document.body.appendChild(scrollTopBtn);
-    
-    scrollTopBtn.addEventListener('click', () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
-}
-
-function toggleScrollTopButton() {
-    if (!scrollTopBtn) return;
-    
-    if (window.scrollY > 500) {
-        scrollTopBtn.style.display = 'flex';
-    } else {
-        scrollTopBtn.style.display = 'none';
+    if (revealObserver) {
+        revealObserver.disconnect()
+        revealObserver = null
     }
+
+    if (prefersReducedMotion() || isSmallScreen()) {
+        revealElements.forEach((element) => element.classList.add('is-visible'))
+        return
+    }
+
+    revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return
+
+            entry.target.classList.add('is-visible')
+            observer.unobserve(entry.target)
+        })
+    }, {
+        threshold: 0.14,
+        rootMargin: '0px 0px -48px 0px'
+    })
+
+    revealElements
+        .filter((element) => !element.classList.contains('is-visible'))
+        .forEach((element) => revealObserver.observe(element))
 }
 
-// Create scroll to top button
-createScrollTopButton();
-window.addEventListener('scroll', toggleScrollTopButton);
+setupRevealObserver()
+bindMediaChange(reduceMotionQuery, setupRevealObserver)
+bindMediaChange(mobileQuery, setupRevealObserver)
 
-// ===== TESTIMONIALS SLIDER =====
-const testimonialsSection = document.querySelector('.testimonials');
-const testimonialsViewport = document.querySelector('.testimonials__viewport');
-const testimonialsSlider = document.querySelector('.testimonials__slider');
-const arrowLeft = document.querySelector('.testimonials__arrow--left');
-const arrowRight = document.querySelector('.testimonials__arrow--right');
+const footerCopy = document.querySelector('.footer__copy')
+
+if (footerCopy) {
+    footerCopy.textContent = `\u00A9 ${new Date().getFullYear()} Colegio Del Solar. Todos los derechos reservados.`
+}
+
+const testimonialsSection = document.querySelector('.testimonials')
+const testimonialsViewport = document.querySelector('.testimonials__viewport')
+const testimonialsSlider = document.querySelector('.testimonials__slider')
+const arrowLeft = document.querySelector('.testimonials__arrow--left')
+const arrowRight = document.querySelector('.testimonials__arrow--right')
 
 if (testimonialsSection && testimonialsViewport && testimonialsSlider && arrowLeft && arrowRight) {
-    let currentIndex = 0;
-    const testimonialCards = Array.from(testimonialsSlider.querySelectorAll('.testimonial-card'));
+    let currentIndex = 0
+    const testimonialCards = Array.from(testimonialsSlider.querySelectorAll('.testimonial-card'))
 
     const getSlidesPerView = () => {
         const value = Number.parseInt(
             getComputedStyle(testimonialsSection).getPropertyValue('--slides-per-view'),
             10
-        );
+        )
 
-        return Number.isNaN(value) ? 1 : value;
-    };
+        return Number.isNaN(value) ? 1 : value
+    }
 
-    const isMobileSlider = () => window.innerWidth <= 768;
+    const getGap = () => {
+        const styles = getComputedStyle(testimonialsSlider)
+        return Number.parseFloat(styles.columnGap || styles.gap) || 0
+    }
 
-    const getMaxIndex = () => Math.max(0, testimonialCards.length - getSlidesPerView());
+    const getMaxIndex = () => Math.max(0, testimonialCards.length - getSlidesPerView())
 
     const updateArrows = () => {
-        const maxIndex = getMaxIndex();
-        const hasOverflow = testimonialCards.length > getSlidesPerView();
-        const shouldShowArrows = hasOverflow && !isMobileSlider();
+        const hasOverflow = testimonialCards.length > getSlidesPerView()
+        const showArrows = hasOverflow && !isSmallScreen()
 
-        arrowLeft.style.display = shouldShowArrows ? 'flex' : 'none';
-        arrowRight.style.display = shouldShowArrows ? 'flex' : 'none';
+        arrowLeft.hidden = !showArrows
+        arrowRight.hidden = !showArrows
+        arrowLeft.disabled = currentIndex === 0 || !hasOverflow
+        arrowRight.disabled = currentIndex >= getMaxIndex() || !hasOverflow
+    }
 
-        arrowLeft.disabled = currentIndex === 0 || !hasOverflow;
-        arrowRight.disabled = currentIndex >= maxIndex || !hasOverflow;
-    };
+    const updateSlider = ({ resetScroll = false } = {}) => {
+        currentIndex = Math.max(0, Math.min(currentIndex, getMaxIndex()))
 
-    const updateSlider = () => {
-        const maxIndex = getMaxIndex();
-        currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+        if (isSmallScreen()) {
+            testimonialsSlider.style.transform = ''
 
-        if (isMobileSlider()) {
-            testimonialsSlider.style.transform = 'translateX(0)';
-            testimonialsViewport.scrollLeft = 0;
-            updateArrows();
-            return;
+            if (resetScroll) {
+                testimonialsViewport.scrollLeft = 0
+            }
+
+            updateArrows()
+            return
         }
 
-        const firstCard = testimonialCards[0];
-        if (!firstCard) return;
+        const firstCard = testimonialCards[0]
+        if (!firstCard) return
 
-        const gap = Number.parseFloat(getComputedStyle(testimonialsSlider).columnGap || getComputedStyle(testimonialsSlider).gap) || 0;
-        const offset = currentIndex * (firstCard.offsetWidth + gap);
-        testimonialsSlider.style.transform = `translateX(-${offset}px)`;
-
-        updateArrows();
-    };
+        const offset = currentIndex * (firstCard.getBoundingClientRect().width + getGap())
+        testimonialsSlider.style.transform = `translateX(-${offset}px)`
+        updateArrows()
+    }
 
     arrowRight.addEventListener('click', () => {
-        if (currentIndex < getMaxIndex()) {
-            currentIndex += 1;
-            updateSlider();
-        }
-    });
+        if (currentIndex >= getMaxIndex()) return
+        currentIndex += 1
+        updateSlider()
+    })
 
     arrowLeft.addEventListener('click', () => {
-        if (currentIndex > 0) {
-            currentIndex -= 1;
-            updateSlider();
-        }
-    });
+        if (currentIndex <= 0) return
+        currentIndex -= 1
+        updateSlider()
+    })
 
-    let resizeTimer = null;
-    window.addEventListener('resize', () => {
-        window.clearTimeout(resizeTimer);
-        resizeTimer = window.setTimeout(updateSlider, 120);
-    });
+    let resizeTimer = null
 
-    updateSlider();
+    const handleResize = () => {
+        window.clearTimeout(resizeTimer)
+        resizeTimer = window.setTimeout(() => updateSlider({ resetScroll: true }), 120)
+    }
+
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('load', () => updateSlider({ resetScroll: true }))
+
+    if (typeof ResizeObserver === 'function') {
+        const sliderResizeObserver = new ResizeObserver(() => updateSlider())
+        sliderResizeObserver.observe(testimonialsViewport)
+    }
+
+    updateSlider()
 }
 
-// ===== BLOG - GOOGLE SHEETS INTEGRATION =====
-const GSHEET_ID = ''; // Ingresá aquí el ID de tu Google Sheet publicado como CSV
+const GSHEET_ID = ''
 
-async function loadBlogPosts() {
-    const blogSection = document.getElementById('blog');
-    const blogContainer = document.getElementById('blog-container');
-    const blogLoading = document.getElementById('blog-loading');
-    const blogEmpty = document.getElementById('blog-empty');
-    const blogError = document.getElementById('blog-error');
-    
-    if (!blogContainer || blogSection?.hidden) return;
-    
-    // Si no hay ID configurado, mostrar empty state
-    if (!GSHEET_ID) {
-        blogLoading.style.display = 'none';
-        blogEmpty.style.display = 'flex';
-        return;
-    }
-    
-    try {
-        // Mostrar loading
-        blogLoading.style.display = 'flex';
-        blogEmpty.style.display = 'none';
-        blogError.style.display = 'none';
-        
-        // URL de la Google Sheet publicada como CSV
-        // Formato: https://docs.google.com/spreadsheets/d/{GSHEET_ID}/export?format=csv&gid=0
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${GSHEET_ID}/export?format=csv&gid=0`;
-        
-        const response = await fetch(csvUrl);
-        
-        if (!response.ok) {
-            throw new Error('Error al cargar los datos');
-        }
-        
-        const csvText = await response.text();
-        const posts = parseCSV(csvText);
-        
-        // Ocultar loading
-        blogLoading.style.display = 'none';
-        
-        if (posts.length === 0) {
-            blogEmpty.style.display = 'flex';
-            return;
-        }
-        
-        // Renderizar posts
-        blogContainer.innerHTML = posts.map(post => createBlogPostHTML(post)).join('');
-        
-    } catch (error) {
-        console.error('Error cargando blog posts:', error);
-        blogLoading.style.display = 'none';
-        blogError.style.display = 'flex';
-    }
-}
-
-function parseCSV(csvText) {
-    const lines = csvText.split('\n');
-    const posts = [];
-    
-    // Saltar la primera línea (encabezados)
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        
-        // Parsear CSV respetando comas dentro de comillas
-        const values = parseCSVLine(line);
-        
-        if (values.length >= 4) {
-            posts.push({
-                title: values[0] || 'Sin título',
-                date: values[1] || '',
-                image: values[2] || '',
-                excerpt: values[3] || '',
-                link: values[4] || '#'
-            });
-        }
-    }
-    
-    return posts;
+function escapeHTML(value) {
+    return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;')
 }
 
 function parseCSVLine(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
-    
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        
-        if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-            result.push(current.trim());
-            current = '';
-        } else {
-            current += char;
+    const result = []
+    let current = ''
+    let inQuotes = false
+
+    for (let index = 0; index < line.length; index += 1) {
+        const char = line[index]
+        const nextChar = line[index + 1]
+
+        if (char === '"' && inQuotes && nextChar === '"') {
+            current += '"'
+            index += 1
+            continue
         }
+
+        if (char === '"') {
+            inQuotes = !inQuotes
+            continue
+        }
+
+        if (char === ',' && !inQuotes) {
+            result.push(current.trim())
+            current = ''
+            continue
+        }
+
+        current += char
     }
-    
-    result.push(current.trim());
-    return result;
+
+    result.push(current.trim())
+    return result
+}
+
+function parseCSV(csvText) {
+    return csvText
+        .split(/\r?\n/)
+        .slice(1)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map(parseCSVLine)
+        .filter((values) => values.length >= 4)
+        .map((values) => ({
+            title: values[0] || 'Sin titulo',
+            date: values[1] || '',
+            image: values[2] || '',
+            excerpt: values[3] || '',
+            link: values[4] || '#'
+        }))
 }
 
 function createBlogPostHTML(post) {
-    const hasImage = post.image && post.image !== '';
-    
     return `
-        <article class="blog-post">
-            <div class="blog-post__image">
-                ${hasImage 
-                    ? `<img src="${post.image}" alt="${post.title}" loading="lazy">` 
-                    : `<div class="blog-post__placeholder">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                            <polyline points="21 15 16 10 5 21"></polyline>
-                        </svg>
-                    </div>`
-                }
-            </div>
-            <div class="blog-post__content">
-                ${post.date ? `<span class="blog-post__date">${post.date}</span>` : ''}
-                <h3 class="blog-post__title">${post.title}</h3>
-                <p class="blog-post__excerpt">${post.excerpt}</p>
-                <a href="${post.link}" class="blog-post__link" ${post.link !== '#' ? 'target="_blank" rel="noopener noreferrer"' : ''}>
-                    Leer más →
-                </a>
-            </div>
+        <article class="project-card">
+            <span class="project-card__pill">${escapeHTML(post.date || 'Novedad')}</span>
+            <h3>${escapeHTML(post.title)}</h3>
+            <p>${escapeHTML(post.excerpt)}</p>
         </article>
-    `;
+    `
 }
 
-// Cargar blog posts cuando la página carga
+async function loadBlogPosts() {
+    const blogSection = document.getElementById('blog')
+    const blogContainer = document.getElementById('blog-container')
+    const blogLoading = document.getElementById('blog-loading')
+    const blogEmpty = document.getElementById('blog-empty')
+    const blogError = document.getElementById('blog-error')
+
+    if (!blogContainer || blogSection?.hidden) return
+
+    if (!GSHEET_ID) {
+        if (blogLoading) blogLoading.style.display = 'none'
+        if (blogEmpty) blogEmpty.style.display = 'block'
+        return
+    }
+
+    try {
+        if (blogLoading) blogLoading.style.display = 'block'
+        if (blogEmpty) blogEmpty.style.display = 'none'
+        if (blogError) blogError.style.display = 'none'
+
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${GSHEET_ID}/export?format=csv&gid=0`
+        const response = await fetch(csvUrl)
+
+        if (!response.ok) {
+            throw new Error('Error al cargar los datos')
+        }
+
+        const csvText = await response.text()
+        const posts = parseCSV(csvText)
+
+        if (blogLoading) blogLoading.style.display = 'none'
+
+        if (!posts.length) {
+            if (blogEmpty) blogEmpty.style.display = 'block'
+            return
+        }
+
+        blogContainer.innerHTML = posts.map(createBlogPostHTML).join('')
+    } catch (error) {
+        console.error('Error cargando blog posts:', error)
+        if (blogLoading) blogLoading.style.display = 'none'
+        if (blogError) blogError.style.display = 'block'
+    }
+}
+
 window.addEventListener('load', () => {
-    loadBlogPosts();
-});
-
-// ===== VIDEO CONTROLS =====
-const playButtons = document.querySelectorAll('.play-button');
-playButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-        e.preventDefault();
-        // Here you would implement video playback functionality
-        alert('Funcionalidad de video - Aquí se reproducirá el testimonio en video');
-    });
-});
-
-// ===== CONSOLE MESSAGE =====
-console.log('%c🎓 Colegio Del Solar', 'color: #1a365d; font-size: 24px; font-weight: bold;');
-console.log('%cSitio web desarrollado con HTML, CSS y JavaScript', 'color: #d4a574; font-size: 14px;');
+    updateHeaderState()
+    updateActiveLink()
+    loadBlogPosts()
+})
