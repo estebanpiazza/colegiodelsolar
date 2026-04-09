@@ -1,0 +1,17 @@
+<svg width="720" height="420" viewBox="0 0 720 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="82" y1="54" x2="638" y2="366" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F4F8FF"/>
+      <stop offset="1" stop-color="#E3EEFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="420" rx="28" fill="url(#bg)"/>
+  <circle cx="114" cy="92" r="64" fill="#FFFFFF" fill-opacity="0.6"/>
+  <circle cx="626" cy="338" r="92" fill="#FFFFFF" fill-opacity="0.45"/>
+  <rect x="174" y="74" width="372" height="272" rx="28" fill="#FFFFFF" stroke="#00418C" stroke-opacity="0.14" stroke-width="2"/>
+  <path d="M360 136L436 170V232C436 265.941 404.585 292.629 360 312C315.415 292.629 284 265.941 284 232V170L360 136Z" fill="#EEF5FF" stroke="#00418C" stroke-opacity="0.28" stroke-width="3"/>
+  <path d="M360 181V262" stroke="#00418C" stroke-opacity="0.3" stroke-width="10" stroke-linecap="round"/>
+  <path d="M319 221H401" stroke="#00418C" stroke-opacity="0.3" stroke-width="10" stroke-linecap="round"/>
+  <text x="360" y="372" text-anchor="middle" fill="#00418C" font-family="Arial, sans-serif" font-size="28" font-weight="700">Logo del colegio</text>
+  <text x="360" y="401" text-anchor="middle" fill="#2D5D96" font-family="Arial, sans-serif" font-size="16">Reemplaza este archivo por el logo final</text>
+</svg>

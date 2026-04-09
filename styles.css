@@ -425,8 +425,8 @@ ul {
     justify-content: center;
     padding: 1rem 1.1rem;
     border-radius: 999px;
-    border: 1px solid rgba(0, 65, 140, 0.12);
-    background: #ffffff;
+    border: 1px solid rgba(208, 170, 20, 0.45);
+    background: #f6d84e;
     color: var(--color-ink);
     font-weight: 800;
     text-align: center;
@@ -435,8 +435,8 @@ ul {
 
 .quick-link:hover {
     transform: translateY(-2px);
-    border-color: rgba(0, 65, 140, 0.24);
-    background: #f8fafc;
+    border-color: rgba(176, 139, 0, 0.55);
+    background: #efcd2f;
 }
 
 .story__grid,
@@ -789,6 +789,38 @@ ul {
     transition: transform var(--transition), box-shadow var(--transition);
 }
 
+.project-card--media {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+
+.project-card__media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(0, 65, 140, 0.08);
+    background: linear-gradient(135deg, #eef5ff 0%, #dceaff 100%);
+}
+
+.project-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.project-card__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 1.6rem;
+}
+
+.project-card--media:hover .project-card__media img {
+    transform: scale(1.04);
+}
+
 .project-card:hover,
 .school-card:hover,
 .step-card:hover,
@@ -817,6 +849,40 @@ ul {
 .step-card,
 .cert-card {
     padding: 1.5rem;
+}
+
+.school-card--media {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+
+.school-card__media {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    padding: 1.6rem;
+    border-bottom: 1px solid rgba(0, 65, 140, 0.08);
+    background: linear-gradient(135deg, #f6f9ff 0%, #e7f0ff 100%);
+}
+
+.school-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s ease;
+}
+
+.school-card__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+
+.school-card--media:hover .school-card__media img {
+    transform: scale(1.03);
 }
 
 .step-card__number {

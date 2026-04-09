@@ -1,0 +1,21 @@
+<svg width="800" height="500" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="80" y1="40" x2="720" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E9F2FF"/>
+      <stop offset="1" stop-color="#D7E8FF"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="160" y1="110" x2="640" y2="390" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="32" fill="url(#bg)"/>
+  <circle cx="124" cy="96" r="72" fill="#FFFFFF" fill-opacity="0.35"/>
+  <circle cx="692" cy="402" r="112" fill="#FFFFFF" fill-opacity="0.24"/>
+  <rect x="126" y="92" width="548" height="316" rx="28" fill="url(#glow)" stroke="#00418C" stroke-opacity="0.16" stroke-width="2"/>
+  <rect x="230" y="162" width="340" height="176" rx="22" fill="#FFFFFF" fill-opacity="0.82" stroke="#00418C" stroke-opacity="0.18" stroke-width="2"/>
+  <path d="M292 287L360.5 229L410 275L458 242L508 287V299H292V287Z" fill="#00418C" fill-opacity="0.18"/>
+  <circle cx="453" cy="204" r="18" fill="#00418C" fill-opacity="0.2"/>
+  <text x="400" y="372" text-anchor="middle" fill="#00418C" font-family="Arial, sans-serif" font-size="28" font-weight="700">Foto del proyecto</text>
+  <text x="400" y="406" text-anchor="middle" fill="#2D5D96" font-family="Arial, sans-serif" font-size="16">Reemplaza este archivo por la imagen final</text>
+</svg>
