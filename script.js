@@ -7,6 +7,28 @@ const sections = Array.from(document.querySelectorAll('section[id]')).filter((se
 const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
 const mobileQuery = window.matchMedia('(max-width: 768px)')
 const navBreakpointQuery = window.matchMedia('(max-width: 980px)')
+const pageLang = document.documentElement.lang.toLowerCase().startsWith('en') ? 'en' : 'es'
+
+const i18n = {
+    es: {
+        contactSent: 'Mensaje enviado. Te responderemos a la brevedad.',
+        contactSending: 'Enviando tu mensaje...',
+        contactSendingButton: 'Enviando...',
+        contactSubmitButton: 'Enviar mensaje',
+        contactError: 'No pudimos enviar el mensaje. Intenta nuevamente en unos minutos.',
+        footerCopy: (year) => `\u00A9 ${year} Colegio Del Solar. Todos los derechos reservados.`
+    },
+    en: {
+        contactSent: 'Message sent. We will get back to you shortly.',
+        contactSending: 'Sending your message...',
+        contactSendingButton: 'Sending...',
+        contactSubmitButton: 'Send message',
+        contactError: 'We could not send your message. Please try again in a few minutes.',
+        footerCopy: (year) => `\u00A9 ${year} Colegio Del Solar. All rights reserved.`
+    }
+}
+
+const t = i18n[pageLang]
 
 function bindMediaChange(mediaQuery, handler) {
     if (typeof mediaQuery.addEventListener === 'function') {
@@ -97,7 +119,8 @@ const scrollTopButton = document.getElementById('scroll-top')
 
 function updateScrollTopButton() {
     if (!scrollTopButton) return
-    scrollTopButton.classList.toggle('is-visible', window.scrollY > 400)
+    const triggerOffset = isSmallScreen() ? 760 : 400
+    scrollTopButton.classList.toggle('is-visible', window.scrollY > triggerOffset)
 }
 
 if (scrollTopButton) {
@@ -173,7 +196,7 @@ if (contactForm) {
 
         if (honeypot) {
             contactForm.reset()
-            setContactStatus('Mensaje enviado. Te responderemos a la brevedad.', 'success')
+            setContactStatus(t.contactSent, 'success')
             return
         }
 
@@ -184,11 +207,11 @@ if (contactForm) {
         }
 
         if (contactSubmitText) {
-            contactSubmitText.textContent = 'Enviando...'
+            contactSubmitText.textContent = t.contactSendingButton
         }
 
         contactForm.setAttribute('aria-busy', 'true')
-        setContactStatus('Enviando tu mensaje...', 'loading')
+        setContactStatus(t.contactSending, 'loading')
 
         try {
             const response = await fetch(contactForm.action, {
@@ -202,14 +225,14 @@ if (contactForm) {
             const data = await response.json().catch(() => null)
 
             if (!response.ok) {
-                throw new Error(data?.message || 'No pudimos enviar el mensaje. Intenta nuevamente en unos minutos.')
+                throw new Error(data?.message || t.contactError)
             }
 
             contactForm.reset()
-            setContactStatus('Mensaje enviado. Te responderemos a la brevedad.', 'success')
+            setContactStatus(t.contactSent, 'success')
         } catch (error) {
             setContactStatus(
-                error?.message || 'No pudimos enviar el mensaje. Intenta nuevamente en unos minutos.',
+                error?.message || t.contactError,
                 'error'
             )
         } finally {
@@ -220,7 +243,7 @@ if (contactForm) {
             }
 
             if (contactSubmitText) {
-                contactSubmitText.textContent = 'Enviar mensaje'
+                contactSubmitText.textContent = t.contactSubmitButton
             }
         }
     })
@@ -266,7 +289,7 @@ bindMediaChange(mobileQuery, setupRevealObserver)
 const footerCopy = document.querySelector('.footer__copy')
 
 if (footerCopy) {
-    footerCopy.textContent = `\u00A9 ${new Date().getFullYear()} Colegio Del Solar. Todos los derechos reservados.`
+    footerCopy.textContent = t.footerCopy(new Date().getFullYear())
 }
 
 const testimonialsSection = document.querySelector('.testimonials')
