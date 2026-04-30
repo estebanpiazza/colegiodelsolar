@@ -501,3 +501,35 @@ window.addEventListener('load', () => {
     updateActiveLink()
     loadBlogPosts()
 })
+
+/* ── Modal: Carta de la Directora ── */
+;(function () {
+    const modal = document.getElementById('letter-modal')
+    const openBtn = document.getElementById('btn-carta-directora')
+    const closeBtn = document.getElementById('letter-modal-close')
+    const backdrop = modal?.querySelector('.letter-modal__backdrop')
+
+    if (!modal || !openBtn) return
+
+    function openModal() {
+        modal.removeAttribute('hidden')
+        document.body.style.overflow = 'hidden'
+        closeBtn?.focus()
+    }
+
+    function closeModal() {
+        modal.setAttribute('hidden', '')
+        document.body.style.overflow = ''
+        openBtn?.focus()
+    }
+
+    openBtn.addEventListener('click', openModal)
+    closeBtn?.addEventListener('click', closeModal)
+    backdrop?.addEventListener('click', closeModal)
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.hasAttribute('hidden')) {
+            closeModal()
+        }
+    })
+})()

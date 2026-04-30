@@ -685,14 +685,16 @@
                     </p>
                     <div class="admissions__actions">
                         <a href="#contacto" class="button button--primary">Solicitar información</a>
-                        <a href="Documento (1).docx" download="Carta-del-Director-Colegio-del-Solar.docx" class="button button--secondary">
+                        <button type="button" class="button button--secondary" id="btn-carta-directora">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
                             </svg>
-                            Carta del Director
-                        </a>
+                            Carta de la Directora
+                        </button>
                     </div>
                 </div>
 
@@ -889,6 +891,38 @@
             <p class="footer__copy"></p>
         </div>
     </footer>
+
+    <!-- Modal: Carta de la Directora -->
+    <div class="letter-modal" id="letter-modal" role="dialog" aria-modal="true" aria-labelledby="letter-modal-title" hidden>
+        <div class="letter-modal__backdrop"></div>
+        <div class="letter-modal__panel">
+            <button class="letter-modal__close" id="letter-modal-close" type="button" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="letter-modal__body">
+                <span class="section__eyebrow">Mensaje institucional</span>
+                <h2 class="letter-modal__title" id="letter-modal-title">Carta de la Directora General</h2>
+                <div class="letter-modal__text">
+                    <p>En nuestros Colegios del Solar creemos profundamente que educar es formar personas capaces de comprender el mundo, transformarlo y habitarlo con sentido.</p>
+                    <p>Con más de 40 años de trayectoria, hemos construido un camino sólido que integra tradición e innovación, sosteniendo una mirada educativa que evoluciona con el tiempo sin perder su esencia. Somos el único colegio bilingüe acreditado en Bahía Blanca y la Región 22, y entendemos esta distinción no solo como un reconocimiento, sino como una responsabilidad que asumimos con compromiso y visión de futuro.</p>
+                    <p>Nuestro proyecto educativo se sostiene en cuatro pilares fundamentales: una formación bilingüe de excelencia, una cultura de innovación pedagógica real en el aula, una educación inclusiva que reconoce y acompaña la singularidad de cada estudiante, y una propuesta que promueve la vida al aire libre, el respeto por el medio ambiente y la actividad física y deportiva como dimensiones esenciales en la formación.</p>
+                    <p>El bilingüismo en el Colegio del Solar no es solo una herramienta académica: es una verdadera puerta al mundo. A través de programas internacionales y de una inmersión progresiva desde edades tempranas, formamos alumnos capaces de comunicarse, pensar y desenvolverse en contextos globales.</p>
+                    <p>La innovación, por su parte, no es un concepto abstracto: es una práctica cotidiana. Se expresa en propuestas concretas como la robótica y la programación desde edades iniciales, el desarrollo del pensamiento computacional, el trabajo con inteligencia artificial, el ajedrez como gimnasio mental, los espacios de creatividad y los proyectos interdisciplinarios que conectan el aprendizaje con la realidad.</p>
+                    <p>Al mismo tiempo, sabemos que no hay educación de calidad sin inclusión. Por eso promovemos una escuela que acompaña, que escucha y que genera oportunidades reales para todos. Contamos con un equipo interdisciplinario que sostiene el desarrollo integral de cada alumno, atendiendo tanto sus procesos académicos como emocionales.</p>
+                    <p>Creemos también en el valor formativo del contacto con la naturaleza, del movimiento y del deporte como parte del bienestar integral. Fomentamos experiencias al aire libre, el cuidado del entorno y hábitos de vida saludables que acompañan a nuestros alumnos a lo largo de toda su trayectoria.</p>
+                    <p>En nuestros Colegios del Solar, cada propuesta, cada proyecto y cada decisión tienen un mismo propósito: formar personas íntegras, con valores, con pensamiento crítico, con sensibilidad y con herramientas para enfrentar los desafíos del presente y del futuro.</p>
+                    <p>Los invitamos a ser parte de esta comunidad educativa que, desde hace más de cuatro décadas, sigue apostando a una educación con sentido, con innovación y, sobre todo, profundamente humana.</p>
+                </div>
+                <footer class="letter-modal__footer">
+                    <p class="letter-modal__signature">Isabel Oms</p>
+                    <p class="letter-modal__role">Dirección General — Red de Colegios del Solar</p>
+                </footer>
+            </div>
+        </div>
+    </div>
 
     <button class="scroll-top" id="scroll-top" type="button" aria-label="Volver arriba">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
