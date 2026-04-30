@@ -940,6 +940,19 @@ ul {
     gap: 1.25rem;
 }
 
+.admissions__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    align-items: center;
+}
+
+.admissions__actions .button {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+
 .network__schools,
 .admissions__steps {
     display: grid;
