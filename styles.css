@@ -510,6 +510,7 @@ ul {
 .pillar-card,
 .project-card,
 .school-card,
+.leader-card,
 .step-card,
 .cert-card {
     background: var(--color-surface);
@@ -604,6 +605,7 @@ ul {
 .project-card h3,
 .campus-card h3,
 .school-card h3,
+.leader-card h3,
 .step-card h3,
 .cert-card h3,
 .contact__item h3 {
@@ -619,6 +621,7 @@ ul {
 .project-card p,
 .campus-card p,
 .school-card p,
+.leader-card p,
 .step-card p,
 .cert-card p,
 .contact__item p {
@@ -925,6 +928,7 @@ ul {
 
 .project-card:hover,
 .school-card:hover,
+.leader-card:hover,
 .step-card:hover,
 .cert-card:hover,
 .pillar-card:hover,
@@ -998,6 +1002,85 @@ ul {
 
 .school-card--media:hover .school-card__media img {
     transform: scale(1.03);
+}
+
+.leadership__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.leader-card {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.leader-card__media {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: linear-gradient(135deg, #eef5ff 0%, #dceaff 100%);
+}
+
+.leader-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.45s ease;
+}
+
+.leader-card:hover .leader-card__media img {
+    transform: scale(1.04);
+}
+
+.leader-card__media--placeholder {
+    display: grid;
+    place-items: center;
+    border-bottom: 1px solid rgba(0, 65, 140, 0.08);
+    background:
+        linear-gradient(135deg, rgba(0, 65, 140, 0.08), rgba(253, 205, 36, 0.18)),
+        #f6f9ff;
+}
+
+.leader-card__media--placeholder span {
+    display: grid;
+    width: 6rem;
+    height: 6rem;
+    place-items: center;
+    border: 1px solid rgba(0, 65, 140, 0.16);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.78);
+    color: var(--color-ink);
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.leader-card__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 1.45rem;
+}
+
+.leader-card__credential {
+    display: inline-flex;
+    width: fit-content;
+    margin-bottom: 0.75rem;
+    padding: 0.32rem 0.62rem;
+    border-radius: 999px;
+    background: rgba(253, 205, 36, 0.22);
+    color: var(--color-ink);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.leader-card__content p + p {
+    margin-top: 0.2rem;
 }
 
 .step-card__number {
@@ -1282,6 +1365,14 @@ ul {
 }
 
 @media screen and (max-width: 1140px) {
+    .nav__list {
+        gap: 0.65rem;
+    }
+
+    .nav__link {
+        font-size: 0.82rem;
+    }
+
     .hero__grid,
     .story__grid,
     .bilingual__grid,
@@ -1310,6 +1401,10 @@ ul {
     }
 
     .footer__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .leadership__grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
@@ -1364,6 +1459,10 @@ ul {
         width: 100%;
         padding: 0.9rem 0.3rem;
         font-size: 1.03rem;
+    }
+
+    .leadership__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .nav__toggle,
@@ -1586,6 +1685,7 @@ ul {
     .campus-card__content,
     .project-card__content,
     .school-card__content,
+    .leader-card__content,
     .contact__form {
         padding: 1.25rem;
     }
@@ -1683,6 +1783,10 @@ ul {
     .network__schools,
     .admissions__steps {
         grid-auto-columns: 92%;
+    }
+
+    .leadership__grid {
+        grid-template-columns: 1fr;
     }
 
     .testimonial-card__video {
