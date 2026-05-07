@@ -224,7 +224,9 @@ if (contactForm) {
 
             const data = await response.json().catch(() => null)
 
-            if (!response.ok) {
+            const submissionFailed = data?.success === false || data?.success === 'false'
+
+            if (!response.ok || submissionFailed) {
                 throw new Error(data?.message || t.contactError)
             }
 
