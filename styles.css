@@ -1010,6 +1010,12 @@ ul {
     gap: 1.25rem;
 }
 
+@media screen and (min-width: 1201px) {
+    .leadership__grid .leader-card:nth-child(5) {
+        grid-column: 2;
+    }
+}
+
 .leader-card {
     display: flex;
     min-height: 100%;
@@ -1029,6 +1035,10 @@ ul {
     height: 100%;
     object-fit: cover;
     transition: transform 0.45s ease;
+}
+
+.leader-card__image--carlos {
+    object-position: center top;
 }
 
 .leader-card:hover .leader-card__media img {
