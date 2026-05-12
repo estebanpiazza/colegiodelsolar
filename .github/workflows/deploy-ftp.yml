@@ -9,18 +9,29 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
+      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+      FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate required secrets
+        shell: bash
+        run: |
+          test -n "$FTP_SERVER" || (echo "Missing secret: FTP_SERVER" && exit 1)
+          test -n "$FTP_USERNAME" || (echo "Missing secret: FTP_USERNAME" && exit 1)
+          test -n "$FTP_PASSWORD" || (echo "Missing secret: FTP_PASSWORD" && exit 1)
+
       - name: Deploy to FTP server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: ${{ secrets.FTP_PORT }}
+          server: ${{ env.FTP_SERVER }}
+          username: ${{ env.FTP_USERNAME }}
+          password: ${{ env.FTP_PASSWORD }}
+          port: 21
           protocol: ftp
           local-dir: ./
           server-dir: /web/
