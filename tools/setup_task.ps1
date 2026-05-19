@@ -51,11 +51,12 @@ if (-not (Test-Path $EnvFile)) {
 }
 
 # ── Tarea Programada ────────────────────────────────────────────
-$TaskName = "DelSolar - Actualizar Instagram"
+$TaskName  = "DelSolar - Actualizar Instagram"
+$PushScript = Join-Path $ToolsDir "push_instagram.ps1"
 
-# Comando: python script.py >> log.txt 2>&1
-$Cmd  = $PythonExe
-$Args = "`"$ScriptFile`" >> `"$LogFile`" 2>&1"
+# Ejecuta push_instagram.ps1 que corre Python + git push
+$Cmd  = "powershell.exe"
+$Args = "-NonInteractive -ExecutionPolicy Bypass -File `"$PushScript`""
 
 $Action   = New-ScheduledTaskAction -Execute $Cmd -Argument $Args -WorkingDirectory $ProjectDir
 $Trigger  = New-ScheduledTaskTrigger -Daily -At "23:55"
@@ -89,4 +90,4 @@ Write-Host "  Log    : $LogFile"
 Write-Host "=========================================="
 Write-Host ""
 Write-Host "Para ejecutar ahora manualmente:"
-Write-Host "  python `"$ScriptFile`""
+Write-Host "  .\tools\push_instagram.ps1"

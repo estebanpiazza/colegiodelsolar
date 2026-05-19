@@ -1,12 +1,10 @@
 name: Actualizar Instagram
 
+# NOTA: Instagram bloquea las IPs de GitHub Actions (403 Forbidden).
+# Usar tools/push_instagram.ps1 localmente: corre Python + git push
+# -> Deploy FTP sube el JSON al servidor automaticamente.
 on:
-  # Corre todos los días a las 23:55 UTC (= 20:55 ART, hora argentina)
-  schedule:
-    - cron: '55 23 * * *'
-
-  # Permite ejecutarlo manualmente desde la pestaña Actions de GitHub
-  workflow_dispatch:
+  workflow_dispatch:   # solo ejecucion manual (como backup/test)
 
 jobs:
   update:
