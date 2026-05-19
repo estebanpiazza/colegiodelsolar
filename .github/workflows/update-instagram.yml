@@ -43,5 +43,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add instagram_latest.json
           # Solo hace commit si el archivo cambió
-          git diff --cached --quiet || git commit -m "chore: actualizar instagram_latest.json [skip ci]"
+          git diff --cached --quiet || git commit -m "chore: actualizar instagram_latest.json"
           git push
