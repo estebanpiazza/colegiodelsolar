@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Del Solar · Pantalla de entrada</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-ink:          #10438a;
+            --color-ink-soft:     #1a5299;
+            --color-accent:       #fdcd24;
+            --color-bg:           #eef2f8;
+            --color-surface:      #ffffff;
+            --color-surface-soft: #f2f5f9;
+            --color-line:         #d9e0ea;
+            --color-text:         #505050;
+            --color-muted:        #5a6a7e;
+            --shadow-sm:          0 8px 24px rgba(0,65,140,0.07);
+            --radius-md:          1.25rem;
+            --radius-sm:          0.75rem;
+            --font-serif:         'Cormorant Garamond', Georgia, serif;
+            --font-sans:          'Manrope', system-ui, sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            width: 100vw; height: 100vh;
+            overflow: hidden;
+            background: var(--color-bg);
+            font-family: var(--font-sans);
+            color: var(--color-text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img, video { display: block; max-width: 100%; }
+        a { color: inherit; text-decoration: none; }
+        ul { list-style: none; }
+
+        /* ── Estructura ── */
+        .screen {
+            display: grid;
+            grid-template-rows: 4.8rem 1fr;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ── Top bar ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            background: var(--color-surface);
+            border-bottom: 2px solid var(--color-line);
+            flex-shrink: 0;
+        }
+
+        .topbar__logo { height: 2.7rem; }
+
+        .topbar__center { text-align: center; }
+
+        .topbar__date {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-muted);
+        }
+
+        .topbar__clock {
+            font-family: var(--font-serif);
+            font-size: 2.6rem;
+            font-weight: 600;
+            color: var(--color-ink);
+            line-height: 1;
+            letter-spacing: 0.06em;
+        }
+
+        /* ── Grid 3 columnas ── */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr 1.15fr;
+            gap: 1rem;
+            padding: 1rem 1.2rem 1.1rem;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* ── Tarjeta base ── */
+        .card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+            height: 100%;
+        }
+
+        .card__header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.2rem 0.6rem;
+            border-bottom: 1.5px solid var(--color-line);
+            flex-shrink: 0;
+        }
+
+        .card__dot {
+            width: 9px; height: 9px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            flex-shrink: 0;
+        }
+
+        .card__eyebrow {
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--color-ink);
+        }
+
+        .card__body {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            min-height: 0;
+        }
+
+        /* ════════════════════════════════════════
+           NOVEDADES · apiladas, auto-scroll
+        ════════════════════════════════════════ */
+
+        .novedades-viewport {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .novedades-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Con imagen: img arriba / texto abajo */
+        .novedad-item--with-img {
+            display: grid;
+            grid-template-rows: 52% 48%;
+            flex-shrink: 0;
+        }
+
+        .novedad-item__img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Sin imagen: sólo texto */
+        .novedad-item--text-only {
+            padding: 1.3rem 1.4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            flex-shrink: 0;
+        }
+
+        .novedad-item__content {
+            padding: 0.9rem 1.4rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .novedad-item__tag {
+            display: inline-flex;
+            width: fit-content;
+            padding: 0.22rem 0.75rem;
+            background: var(--color-accent);
+            color: var(--color-ink);
+            border-radius: 999px;
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.13em;
+            text-transform: uppercase;
+        }
+
+        .novedad-item__title {
+            font-family: var(--font-serif);
+            font-size: clamp(1.2rem, 1.5vw, 1.7rem);
+            line-height: 1.05;
+            color: var(--color-ink);
+        }
+
+        .novedad-item__body {
+            font-size: 0.87rem;
+            color: var(--color-muted);
+            line-height: 1.65;
+        }
+
+        .novedad-divider {
+            height: 1.5px;
+            background: var(--color-line);
+            flex-shrink: 0;
+            margin: 0 1.4rem;
+        }
+
+        @keyframes scrollNovedades {
+            0%   { transform: translateY(0); }
+            48%  { transform: translateY(var(--scroll-distance)); }
+            52%  { transform: translateY(var(--scroll-distance)); }
+            100% { transform: translateY(0); }
+        }
+
+        .novedades-list.is-scrolling {
+            animation: scrollNovedades ease-in-out infinite;
+            animation-duration: var(--scroll-duration, 24s);
+        }
+
+        /* ════════════════════════════════════════
+           CUMPLEANOS
+        ════════════════════════════════════════ */
+
+        .cumple-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            padding: 0.6rem 0.9rem;
+            overflow-y: auto;
+            height: 100%;
+            scrollbar-width: none;
+        }
+
+        .cumple-list::-webkit-scrollbar { display: none; }
+
+        .cumple-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.6rem 0.65rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .cumple-item__avatar {
+            width: 3rem; height: 3rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-ink), var(--color-ink-soft));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .cumple-item__info { flex: 1; min-width: 0; }
+
+        .cumple-item__name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--color-ink);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cumple-item__grado {
+            font-size: 0.76rem;
+            color: var(--color-muted);
+        }
+
+        .cumple-item__badge {
+            flex-shrink: 0;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--color-ink-soft);
+            background: var(--color-surface-soft);
+            border: 1.5px solid var(--color-line);
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+        }
+
+        .cumple-empty {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            color: var(--color-muted);
+        }
+
+        .cumple-empty__icon { font-size: 3rem; }
+        .cumple-empty__text { font-size: 0.92rem; font-weight: 600; }
+
+        /* ════════════════════════════════════════
+           INSTAGRAM · columna completa, iframe
+        ════════════════════════════════════════ */
+
+        .ig-body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #fafafa;
+        }
+
+        .ig-frame {
+            flex: 1;
+            width: 100%;
+            border: none;
+            display: block;
+            background: #fafafa;
+        }
+
+        .ig-placeholder {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: linear-gradient(145deg, #fdf4ff 0%, #fce8f3 50%, #fff0e8 100%);
+            text-align: center;
+        }
+
+        .ig-placeholder__icon {
+            width: 4rem; height: 4rem;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            border-radius: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+        }
+
+        .ig-placeholder__handle {
+            font-family: var(--font-serif);
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--color-ink);
+        }
+
+        .ig-placeholder__note {
+            font-size: 0.74rem;
+            color: var(--color-muted);
+            max-width: 280px;
+            line-height: 1.6;
+        }
+
+        .ig-placeholder__code {
+            font-family: monospace;
+            font-size: 0.72rem;
+            background: rgba(0,0,0,0.06);
+            padding: 0.5rem 0.9rem;
+            border-radius: 0.5rem;
+            color: var(--color-ink);
+        }
+
+        /* ── Skeleton ── */
+        @keyframes shimmer {
+            0%   { background-position: -600px 0; }
+            100% { background-position:  600px 0; }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #ececec 25%, #e0e0e0 50%, #ececec 75%);
+            background-size: 1200px 100%;
+            animation: shimmer 1.6s infinite;
+            border-radius: 0.4rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="screen">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+        <img src="Logo-Del-Solar (1).png" alt="Colegio Del Solar" class="topbar__logo">
+        <div class="topbar__center">
+            <div class="topbar__date" id="js-date">--</div>
+        </div>
+        <div class="topbar__clock" id="js-clock">00:00</div>
+    </header>
+
+    <!-- GRID 3 COLUMNAS -->
+    <div class="main-grid">
+
+        <!-- COL 1: Novedades -->
+        <div class="card" id="card-novedades">
+            <div class="card__header">
+                <span class="card__dot"></span>
+                <span class="card__eyebrow">Novedades</span>
+            </div>
+            <div class="card__body">
+                <div class="novedades-viewport" id="novedades-viewport">
+                    <div class="novedades-list" id="novedades-list">
+                        <!-- Skeleton inicial -->
+                        <div class="novedad-item--text-only">
+                            <div class="skeleton" style="height:0.75rem;width:5rem"></div>
+                            <div class="skeleton" style="height:1.5rem;width:85%"></div>
+                            <div class="skeleton" style="height:0.85rem;width:100%"></div>
+                            <div class="skeleton" style="height:0.85rem;width:88%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COL 2: Cumpleanos -->
+        <div class="card" id="card-cumple">
+            <div class="card__header">
+                <span class="card__dot" style="background:#f97316"></span>
+                <span class="card__eyebrow">Cumpleaños</span>
+                <span id="cumple-range-label"
+                      style="margin-left:auto;font-size:0.68rem;color:var(--color-muted);font-weight:700"></span>
+            </div>
+            <div class="card__body">
+                <div class="cumple-list" id="cumple-list">
+                    <div class="cumple-item">
+                        <div class="skeleton" style="width:3rem;height:3rem;border-radius:50%;flex-shrink:0"></div>
+                        <div style="flex:1;display:flex;flex-direction:column;gap:0.4rem">
+                            <div class="skeleton" style="height:0.9rem;width:70%"></div>
+                            <div class="skeleton" style="height:0.7rem;width:44%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COL 3: Instagram -->
+        <div class="card" id="card-instagram">
+            <div class="card__header">
+                <span class="card__dot"
+                      style="background:linear-gradient(45deg,#f09433,#bc1888)"></span>
+                <span class="card__eyebrow">Instagram</span>
+                <span style="margin-left:auto;font-size:0.7rem;color:var(--color-muted);font-weight:700">
+                    @delsolarschool
+                </span>
+            </div>
+            <div class="card__body">
+                <div class="ig-body" id="ig-body">
+                    <!--
+                    COMO CONFIGURAR:
+                    Pegar la URL del post en CONFIG.INSTAGRAM_POST_URL:
+                      https://www.instagram.com/p/SHORTCODE/
+                      https://www.instagram.com/reel/SHORTCODE/
+
+                    Funciona con fotos, carruseles y videos sin API key.
+                    Se recarga sola a medianoche; actualizar la URL
+                    cuando se quiera mostrar otra publicacion.
+
+                    ALTERNATIVA AUTOMATICA sin configuracion manual:
+                    Behold.so (tier gratuito): https://behold.so
+                    Crear cuenta, conectar @delsolarschool,
+                    reemplazar el contenido de #ig-body con:
+                      <div id="behold-widget-TUWIDGETID" style="height:100%"></div>
+                      <script src="https://w.behold.so/widget.js" type="module"></script>
+                    -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+"use strict";
+
+// ═══════════════════════════════════════
+//  CONFIGURACION
+// ═══════════════════════════════════════
+const CONFIG = {
+    // Google Sheets publicado como CSV
+    // Columnas: etiqueta | titulo | cuerpo | imagen_url
+    NOVEDADES_CSV_URL: '',   // pegar URL aqui
+
+    // CSV de cumpleanios. Columnas: nombre | grado | fecha (DD/MM)
+    CUMPLE_CSV_URL: '',      // pegar URL aqui
+
+    // URL del post de Instagram a mostrar:
+    //   https://www.instagram.com/p/SHORTCODE/
+    //   https://www.instagram.com/reel/SHORTCODE/
+    // El iframe carga fotos, carruseles y videos directamente.
+    INSTAGRAM_POST_URL: '',  // pegar URL aqui
+};
+
+// ═══════════════════════════════════════
+//  DATOS PLACEHOLDER
+// ═══════════════════════════════════════
+const NOVEDADES_PLACEHOLDER = [
+    {
+        etiqueta: 'Institucional',
+        titulo: 'Jornada de puertas abiertas',
+        cuerpo: 'El proximo sabado abrimos las puertas para que las familias interesadas conozcan el proyecto educativo Del Solar. Los esperamos de 10 a 13 h.',
+        imagen_url: '',
+    },
+    {
+        etiqueta: 'Academico',
+        titulo: 'Semana de la ciencia en primaria',
+        cuerpo: 'Durante toda esta semana los alumnos de primaria realizaran experimentos e investigaciones en el marco del proyecto Cientificos Del Solar.',
+        imagen_url: '',
+    },
+    {
+        etiqueta: 'Deportes',
+        titulo: 'Torneo interescolar de basquet',
+        cuerpo: 'Nuestros equipos Sub-14 y Sub-17 participaran este viernes y sabado en el torneo interescolar. Vamos, Del Solar!',
+        imagen_url: '',
+    },
+];
+
+const CUMPLE_PLACEHOLDER = [
+    { nombre: 'Valentina Garcia',  grado: '3 A - Primaria', fecha: '' },
+    { nombre: 'Tomas Rodriguez',   grado: '6 B - Primaria', fecha: '' },
+    { nombre: 'Lucia Fernandez',   grado: '1 C - Inicial',  fecha: '' },
+    { nombre: 'Mateo Lopez',       grado: '4 A - Primaria', fecha: '' },
+];
+
+// ═══════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════
+function escHtml(str) {
+    return String(str ?? '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function parseCSV(text) {
+    const lines = text.trim().split('\n').filter(l => l.trim());
+    if (lines.length < 2) return [];
+    const headers = splitCSVLine(lines[0]).map(h => h.toLowerCase().trim());
+    return lines.slice(1).map(line => {
+        const cols = splitCSVLine(line);
+        const obj  = {};
+        headers.forEach((h, i) => { obj[h] = (cols[i] ?? '').trim(); });
+        return obj;
+    });
+}
+
+function splitCSVLine(line) {
+    const cols = []; let cur = '', inQ = false;
+    for (const ch of line) {
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === ',' && !inQ) { cols.push(cur); cur = ''; }
+        else { cur += ch; }
+    }
+    cols.push(cur);
+    return cols;
+}
+
+// ═══════════════════════════════════════
+//  RELOJ
+// ═══════════════════════════════════════
+const DAYS   = ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
+const MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio',
+                'agosto','septiembre','octubre','noviembre','diciembre'];
+
+function updateClock() {
+    const now = new Date();
+    const hh  = String(now.getHours()).padStart(2,'0');
+    const mm  = String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('js-clock').textContent = hh + ':' + mm;
+    document.getElementById('js-date').textContent  =
+        DAYS[now.getDay()] + ' ' + now.getDate() + ' de ' +
+        MONTHS[now.getMonth()] + ' de ' + now.getFullYear();
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// ═══════════════════════════════════════
+//  AUTO-REFRESH A MEDIANOCHE
+// ═══════════════════════════════════════
+(function() {
+    const now = new Date();
+    const next = new Date(now);
+    next.setHours(24, 0, 30, 0);
+    setTimeout(() => location.reload(), next - now);
+}());
+
+// ═══════════════════════════════════════
+//  NOVEDADES - todas apiladas
+// ═══════════════════════════════════════
+function buildNovedades(items) {
+    const list     = document.getElementById('novedades-list');
+    const viewport = document.getElementById('novedades-viewport');
+    list.innerHTML = '';
+
+    items.forEach(function(item, idx) {
+        if (idx > 0) {
+            const div = document.createElement('div');
+            div.className = 'novedad-divider';
+            list.appendChild(div);
+        }
+
+        const safeImg = item.imagen_url &&
+            /^(https:\/\/|\/|\.\/|\.\.\/)/.test(item.imagen_url.trim())
+            ? item.imagen_url.trim() : '';
+
+        const el = document.createElement('div');
+
+        if (safeImg) {
+            el.className = 'novedad-item--with-img';
+
+            const img     = document.createElement('img');
+            img.src       = safeImg;
+            img.alt       = escHtml(item.titulo);
+            img.className = 'novedad-item__img';
+            img.loading   = 'lazy';
+            el.appendChild(img);
+
+            const content = document.createElement('div');
+            content.className = 'novedad-item__content';
+            content.innerHTML =
+                (item.etiqueta ? '<span class="novedad-item__tag">' + escHtml(item.etiqueta) + '</span>' : '') +
+                '<h2 class="novedad-item__title">' + escHtml(item.titulo) + '</h2>' +
+                '<p class="novedad-item__body">'  + escHtml(item.cuerpo)  + '</p>';
+            el.appendChild(content);
+        } else {
+            el.className = 'novedad-item--text-only';
+            el.innerHTML =
+                (item.etiqueta ? '<span class="novedad-item__tag">' + escHtml(item.etiqueta) + '</span>' : '') +
+                '<h2 class="novedad-item__title">' + escHtml(item.titulo) + '</h2>' +
+                '<p class="novedad-item__body">'  + escHtml(item.cuerpo)  + '</p>';
+        }
+
+        list.appendChild(el);
+    });
+
+    // Auto-scroll si el contenido supera el viewport
+    requestAnimationFrame(function() {
+        var viewH = viewport.clientHeight;
+        var listH = list.scrollHeight;
+        if (listH > viewH + 10) {
+            var distance = listH - viewH;
+            var duration = Math.max(14, distance / 45);
+            list.style.setProperty('--scroll-distance', '-' + distance + 'px');
+            list.style.setProperty('--scroll-duration', duration + 's');
+            list.classList.add('is-scrolling');
+        }
+    });
+}
+
+async function loadNovedades() {
+    if (!CONFIG.NOVEDADES_CSV_URL.trim()) {
+        buildNovedades(NOVEDADES_PLACEHOLDER); return;
+    }
+    try {
+        const res  = await fetch(CONFIG.NOVEDADES_CSV_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const rows = parseCSV(await res.text());
+        buildNovedades(rows.length ? rows : NOVEDADES_PLACEHOLDER);
+    } catch(e) {
+        console.warn('[novedades]', e.message);
+        buildNovedades(NOVEDADES_PLACEHOLDER);
+    }
+}
+
+// ═══════════════════════════════════════
+//  CUMPLEANIOS
+// ═══════════════════════════════════════
+function getDatesToShow() {
+    const pad = n => String(n).padStart(2,'0');
+    const today = new Date();
+    const dow   = today.getDay();
+    const dates = [{ label:'Hoy', key: pad(today.getDate())+'/'+pad(today.getMonth()+1) }];
+    if (dow === 5) {
+        const sat = new Date(today); sat.setDate(today.getDate()+1);
+        const sun = new Date(today); sun.setDate(today.getDate()+2);
+        dates.push({ label:'Sab', key: pad(sat.getDate())+'/'+pad(sat.getMonth()+1) });
+        dates.push({ label:'Dom', key: pad(sun.getDate())+'/'+pad(sun.getMonth()+1) });
+    }
+    return dates;
+}
+
+function renderCumple(items) {
+    const dates     = getDatesToShow();
+    const dateIndex = Object.fromEntries(dates.map(d => [d.key, d.label]));
+    const list      = document.getElementById('cumple-list');
+    const rangeEl   = document.getElementById('cumple-range-label');
+    const pad       = n => String(n).padStart(2,'0');
+
+    const matching = items.filter(item => {
+        if (!item.fecha) return false;
+        const parts = item.fecha.split('/');
+        return dateIndex[pad(parts[0])+'/'+pad(parts[1])] !== undefined;
+    });
+
+    rangeEl.textContent = dates.length > 1 ? 'Vie - Sab - Dom' : DAYS[new Date().getDay()];
+    list.innerHTML = '';
+
+    if (!matching.length) {
+        list.innerHTML =
+            '<div class="cumple-empty">' +
+            '<div class="cumple-empty__icon">🎈</div>' +
+            '<div class="cumple-empty__text">No hay cumpleanios ' +
+            (dates.length > 1 ? 'este fin de semana' : 'hoy') +
+            '</div></div>';
+        return;
+    }
+
+    matching.forEach(function(item) {
+        const parts    = item.fecha.split('/');
+        const dayLabel = dateIndex[pad(parts[0])+'/'+pad(parts[1])] || '';
+        const initials = item.nombre.split(' ').filter(w => w.length > 1)
+            .slice(0,2).map(w => w[0].toUpperCase()).join('');
+        const el = document.createElement('div');
+        el.className = 'cumple-item';
+        el.innerHTML =
+            '<div class="cumple-item__avatar">' + escHtml(initials) + '</div>' +
+            '<div class="cumple-item__info">' +
+            '<div class="cumple-item__name">' + escHtml(item.nombre) + '</div>' +
+            '<div class="cumple-item__grado">' + escHtml(item.grado || '') + '</div>' +
+            '</div>' +
+            '<span class="cumple-item__badge">' + escHtml(dayLabel) + '</span>';
+        list.appendChild(el);
+    });
+}
+
+async function loadCumple() {
+    if (!CONFIG.CUMPLE_CSV_URL.trim()) {
+        const today = new Date();
+        const pad   = n => String(n).padStart(2,'0');
+        const key   = pad(today.getDate())+'/'+pad(today.getMonth()+1);
+        renderCumple(CUMPLE_PLACEHOLDER.map(p => Object.assign({}, p, { fecha: key })));
+        return;
+    }
+    try {
+        const res  = await fetch(CONFIG.CUMPLE_CSV_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const rows = parseCSV(await res.text());
+        renderCumple(rows.length ? rows : CUMPLE_PLACEHOLDER);
+    } catch(e) {
+        console.warn('[cumple]', e.message);
+        renderCumple(CUMPLE_PLACEHOLDER);
+    }
+}
+
+// ═══════════════════════════════════════
+//  INSTAGRAM
+//  Usa el endpoint de embed oficial de Instagram:
+//  instagram.com/p/{shortcode}/embed/captioned/
+//  Funciona para fotos, carruseles y videos sin API key.
+//  Solo hay que pegar la URL del post en CONFIG.INSTAGRAM_POST_URL.
+// ═══════════════════════════════════════
+function getShortcode(url) {
+    const m = String(url).match(/instagram\.com\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/);
+    return m ? m[1] : null;
+}
+
+function showInstagramEmbed(url) {
+    const container = document.getElementById('ig-body');
+    const shortcode = getShortcode(url);
+    if (!shortcode) {
+        console.warn('[instagram] URL invalida:', url);
+        showInstagramPlaceholder('URL de Instagram invalida.');
+        return;
+    }
+    // Embed oficial: soporta fotos, carruseles y videos/reels sin API key.
+    // El tipo (p vs reel) no importa para el embed — siempre funciona con /p/
+    var embedUrl = 'https://www.instagram.com/p/' + encodeURIComponent(shortcode) + '/embed/captioned/';
+    container.innerHTML =
+        '<iframe class="ig-frame"' +
+        ' src="' + escHtml(embedUrl) + '"' +
+        ' scrolling="no"' +
+        ' allowtransparency="true"' +
+        ' allow="encrypted-media"' +
+        ' title="Instagram @delsolarschool">' +
+        '</iframe>';
+}
+
+function showInstagramPlaceholder(msg) {
+    var container = document.getElementById('ig-body');
+    container.innerHTML =
+        '<div class="ig-placeholder">' +
+        '<div class="ig-placeholder__icon">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"' +
+        ' fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>' +
+        '<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>' +
+        '<line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>' +
+        '<div class="ig-placeholder__handle">@delsolarschool</div>' +
+        '<p class="ig-placeholder__note">' + escHtml(msg) + '</p>' +
+        '</div>';
+}
+
+async function renderInstagram() {
+    // 1. Intentar leer instagram_latest.json generado por get_instagram_post.py
+    //    (se actualiza automaticamente cada noche via Tarea Programada de Windows)
+    try {
+        var res = await fetch('instagram_latest.json?v=' + Date.now(), { cache: 'no-store' });
+        if (res.ok) {
+            var data = await res.json();
+            if (data.url && data.url.trim()) {
+                showInstagramEmbed(data.url.trim());
+                return;
+            }
+        }
+    } catch(e) {
+        console.info('[instagram] instagram_latest.json no disponible:', e.message);
+    }
+
+    // 2. Fallback: URL manual en CONFIG
+    if (CONFIG.INSTAGRAM_POST_URL.trim()) {
+        showInstagramEmbed(CONFIG.INSTAGRAM_POST_URL.trim());
+        return;
+    }
+
+    // 3. Sin datos: mostrar placeholder con instrucciones
+    showInstagramPlaceholder(
+        'Ejecutar tools/setup_task.ps1 para activar la actualizacion automatica.\n' +
+        'O pegar la URL del post en CONFIG.INSTAGRAM_POST_URL.'
+    );
+}
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+loadNovedades();
+loadCumple();
+renderInstagram();
+</script>
+
+</body>
+</html>

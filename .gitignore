@@ -1,3 +1,5 @@
 .env
+tools/.env
+tools/task_log.txt
 .vscode/sftp.json
 .vscode/ftp-simple.json

@@ -1,0 +1,47 @@
+name: Actualizar Instagram
+
+on:
+  # Corre todos los días a las 23:55 UTC (= 20:55 ART, hora argentina)
+  schedule:
+    - cron: '55 23 * * *'
+
+  # Permite ejecutarlo manualmente desde la pestaña Actions de GitHub
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # necesario para hacer commit y push
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: pip install -r tools/requirements.txt
+
+      - name: Obtener último post de Instagram
+        env:
+          # Credenciales opcionales (GitHub Secrets).
+          # Si Instagram empieza a bloquear acceso anónimo, ir a:
+          # Repo → Settings → Secrets and variables → Actions → New secret
+          # y crear IG_USERNAME e IG_PASSWORD con una cuenta secundaria.
+          IG_USERNAME: ${{ secrets.IG_USERNAME }}
+          IG_PASSWORD: ${{ secrets.IG_PASSWORD }}
+        run: python tools/get_instagram_post.py
+
+      - name: Commit y push si hubo cambios
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add instagram_latest.json
+          # Solo hace commit si el archivo cambió
+          git diff --cached --quiet || git commit -m "chore: actualizar instagram_latest.json [skip ci]"
+          git push
