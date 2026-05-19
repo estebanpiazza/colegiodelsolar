@@ -86,7 +86,7 @@
         /* ── Grid 3 columnas ── */
         .main-grid {
             display: grid;
-            grid-template-columns: 1.15fr 1fr 1.15fr;
+            grid-template-columns: 1fr 1.6fr 0.85fr;
             gap: 1rem;
             padding: 1rem 1.2rem 1.1rem;
             height: 100%;
@@ -137,24 +137,44 @@
         }
 
         /* ════════════════════════════════════════
-           NOVEDADES · apiladas, auto-scroll
+           NOVEDADES · slider (fade entre items)
         ════════════════════════════════════════ */
 
         .novedades-viewport {
             height: 100%;
             overflow: hidden;
-        }
-
-        .novedades-list {
+            position: relative;
             display: flex;
             flex-direction: column;
+        }
+
+        .novedades-slides-wrap {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+        }
+
+        .novedades-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.7s ease;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .novedades-slide.is-active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         /* Con imagen: img arriba / texto abajo */
         .novedad-item--with-img {
             display: grid;
             grid-template-rows: 52% 48%;
-            flex-shrink: 0;
+            flex: 1;
         }
 
         .novedad-item__img {
@@ -169,7 +189,8 @@
             display: flex;
             flex-direction: column;
             gap: 0.55rem;
-            flex-shrink: 0;
+            flex: 1;
+            justify-content: center;
         }
 
         .novedad-item__content {
@@ -205,28 +226,62 @@
             line-height: 1.65;
         }
 
-        .novedad-divider {
-            height: 1.5px;
-            background: var(--color-line);
+        /* Dots del slider */
+        .novedades-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 1rem;
             flex-shrink: 0;
-            margin: 0 1.4rem;
+            border-top: 1.5px solid var(--color-line);
         }
 
-        @keyframes scrollNovedades {
-            0%   { transform: translateY(0); }
-            48%  { transform: translateY(var(--scroll-distance)); }
-            52%  { transform: translateY(var(--scroll-distance)); }
-            100% { transform: translateY(0); }
+        .novedades-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--color-line);
+            transition: background 0.35s, transform 0.35s;
         }
 
-        .novedades-list.is-scrolling {
-            animation: scrollNovedades ease-in-out infinite;
-            animation-duration: var(--scroll-duration, 24s);
+        .novedades-dot.is-active {
+            background: var(--color-ink);
+            transform: scale(1.5);
         }
 
         /* ════════════════════════════════════════
-           CUMPLEANOS
+           CUMPLEANOS · festivo
         ════════════════════════════════════════ */
+
+        @keyframes popIn {
+            0%   { transform: scale(0.5) rotate(-8deg); opacity: 0; }
+            60%  { transform: scale(1.08) rotate(1deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes floatBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            45%       { transform: translateY(-5px) scale(1.05); }
+            70%       { transform: translateY(-2px) scale(1.02); }
+        }
+
+        @keyframes floatUp {
+            0%   { top: 105%; opacity: 0; transform: rotate(0deg); }
+            10%  { opacity: 0.4; }
+            90%  { opacity: 0.15; }
+            100% { top: -10%; opacity: 0; transform: rotate(22deg); }
+        }
+
+        @keyframes pulseEmoji {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50%       { transform: scale(1.3) rotate(12deg); }
+        }
+
+        .cumple-header-emoji {
+            display: inline-block;
+            animation: pulseEmoji 2s ease-in-out infinite;
+            margin-left: 0.2rem;
+        }
 
         .cumple-list {
             display: flex;
@@ -236,6 +291,8 @@
             overflow-y: auto;
             height: 100%;
             scrollbar-width: none;
+            position: relative;
+            z-index: 1;
         }
 
         .cumple-list::-webkit-scrollbar { display: none; }
@@ -243,13 +300,14 @@
         .cumple-item {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            padding: 0.6rem 0.65rem;
+            gap: 0.75rem;
+            padding: 0.5rem 0.6rem;
             border-radius: var(--radius-sm);
+            animation: popIn 0.5s ease both;
         }
 
         .cumple-item__avatar {
-            width: 3rem; height: 3rem;
+            width: 2.7rem; height: 2.7rem;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--color-ink), var(--color-ink-soft));
             display: flex;
@@ -257,15 +315,17 @@
             justify-content: center;
             color: #fff;
             font-weight: 800;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             flex-shrink: 0;
+            animation: floatBounce 2.8s ease-in-out infinite;
+            box-shadow: 0 4px 12px rgba(16,67,138,0.22);
         }
 
         .cumple-item__info { flex: 1; min-width: 0; }
 
         .cumple-item__name {
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             color: var(--color-ink);
             white-space: nowrap;
             overflow: hidden;
@@ -273,19 +333,28 @@
         }
 
         .cumple-item__grado {
-            font-size: 0.76rem;
+            font-size: 0.72rem;
             color: var(--color-muted);
         }
 
         .cumple-item__badge {
             flex-shrink: 0;
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             font-weight: 700;
             color: var(--color-ink-soft);
             background: var(--color-surface-soft);
             border: 1.5px solid var(--color-line);
-            padding: 0.2rem 0.6rem;
+            padding: 0.18rem 0.55rem;
             border-radius: 999px;
+        }
+
+        .cumple-float {
+            position: absolute;
+            top: 105%;
+            pointer-events: none;
+            font-size: 1rem;
+            z-index: 0;
+            animation: floatUp var(--dur, 6s) ease-in-out var(--delay, 0s) infinite;
         }
 
         .cumple-empty {
@@ -401,41 +470,22 @@
             </div>
             <div class="card__body">
                 <div class="novedades-viewport" id="novedades-viewport">
-                    <div class="novedades-list" id="novedades-list">
-                        <!-- Skeleton inicial -->
-                        <div class="novedad-item--text-only">
-                            <div class="skeleton" style="height:0.75rem;width:5rem"></div>
-                            <div class="skeleton" style="height:1.5rem;width:85%"></div>
-                            <div class="skeleton" style="height:0.85rem;width:100%"></div>
-                            <div class="skeleton" style="height:0.85rem;width:88%"></div>
+                    <div class="novedades-slides-wrap">
+                        <div class="novedades-slide is-active">
+                            <!-- Skeleton inicial -->
+                            <div class="novedad-item--text-only">
+                                <div class="skeleton" style="height:0.75rem;width:5rem"></div>
+                                <div class="skeleton" style="height:1.5rem;width:85%"></div>
+                                <div class="skeleton" style="height:0.85rem;width:100%"></div>
+                                <div class="skeleton" style="height:0.85rem;width:88%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- COL 2: Cumpleanos -->
-        <div class="card" id="card-cumple">
-            <div class="card__header">
-                <span class="card__dot" style="background:#f97316"></span>
-                <span class="card__eyebrow">Cumpleaños</span>
-                <span id="cumple-range-label"
-                      style="margin-left:auto;font-size:0.68rem;color:var(--color-muted);font-weight:700"></span>
-            </div>
-            <div class="card__body">
-                <div class="cumple-list" id="cumple-list">
-                    <div class="cumple-item">
-                        <div class="skeleton" style="width:3rem;height:3rem;border-radius:50%;flex-shrink:0"></div>
-                        <div style="flex:1;display:flex;flex-direction:column;gap:0.4rem">
-                            <div class="skeleton" style="height:0.9rem;width:70%"></div>
-                            <div class="skeleton" style="height:0.7rem;width:44%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- COL 3: Instagram -->
+        <!-- COL 2: Instagram -->
         <div class="card" id="card-instagram">
             <div class="card__header">
                 <span class="card__dot"
@@ -464,6 +514,27 @@
                       <div id="behold-widget-TUWIDGETID" style="height:100%"></div>
                       <script src="https://w.behold.so/widget.js" type="module"></script>
                     -->
+                </div>
+            </div>
+        </div>
+
+        <!-- COL 3: Cumpleaños -->
+        <div class="card" id="card-cumple">
+            <div class="card__header">
+                <span class="card__dot" style="background:#f97316"></span>
+                <span class="card__eyebrow">Cumpleaños <span class="cumple-header-emoji">🎂</span></span>
+                <span id="cumple-range-label"
+                      style="margin-left:auto;font-size:0.68rem;color:var(--color-muted);font-weight:700"></span>
+            </div>
+            <div class="card__body">
+                <div class="cumple-list" id="cumple-list">
+                    <div class="cumple-item">
+                        <div class="skeleton" style="width:2.7rem;height:2.7rem;border-radius:50%;flex-shrink:0"></div>
+                        <div style="flex:1;display:flex;flex-direction:column;gap:0.4rem">
+                            <div class="skeleton" style="height:0.9rem;width:70%"></div>
+                            <div class="skeleton" style="height:0.7rem;width:44%"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -585,66 +656,72 @@ setInterval(updateClock, 10000);
 }());
 
 // ═══════════════════════════════════════
-//  NOVEDADES - todas apiladas
+//  NOVEDADES - slider (fade entre items)
 // ═══════════════════════════════════════
 function buildNovedades(items) {
-    const list     = document.getElementById('novedades-list');
     const viewport = document.getElementById('novedades-viewport');
-    list.innerHTML = '';
+    viewport.innerHTML = '';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'novedades-slides-wrap';
+    const dotsEl = document.createElement('div');
+    dotsEl.className = 'novedades-dots';
 
     items.forEach(function(item, idx) {
-        if (idx > 0) {
-            const div = document.createElement('div');
-            div.className = 'novedad-divider';
-            list.appendChild(div);
-        }
-
         const safeImg = item.imagen_url &&
             /^(https:\/\/|\/|\.\/|\.\.\/)/.test(item.imagen_url.trim())
             ? item.imagen_url.trim() : '';
 
-        const el = document.createElement('div');
+        const slide = document.createElement('div');
+        slide.className = 'novedades-slide' + (idx === 0 ? ' is-active' : '');
 
+        const inner = document.createElement('div');
         if (safeImg) {
-            el.className = 'novedad-item--with-img';
-
-            const img     = document.createElement('img');
-            img.src       = safeImg;
-            img.alt       = escHtml(item.titulo);
+            inner.className = 'novedad-item--with-img';
+            inner.style.height = '100%';
+            const img = document.createElement('img');
+            img.src = safeImg;
+            img.alt = escHtml(item.titulo);
             img.className = 'novedad-item__img';
-            img.loading   = 'lazy';
-            el.appendChild(img);
-
+            img.loading = 'lazy';
+            inner.appendChild(img);
             const content = document.createElement('div');
             content.className = 'novedad-item__content';
             content.innerHTML =
                 (item.etiqueta ? '<span class="novedad-item__tag">' + escHtml(item.etiqueta) + '</span>' : '') +
                 '<h2 class="novedad-item__title">' + escHtml(item.titulo) + '</h2>' +
-                '<p class="novedad-item__body">'  + escHtml(item.cuerpo)  + '</p>';
-            el.appendChild(content);
+                '<p class="novedad-item__body">' + escHtml(item.cuerpo) + '</p>';
+            inner.appendChild(content);
         } else {
-            el.className = 'novedad-item--text-only';
-            el.innerHTML =
+            inner.className = 'novedad-item--text-only';
+            inner.innerHTML =
                 (item.etiqueta ? '<span class="novedad-item__tag">' + escHtml(item.etiqueta) + '</span>' : '') +
                 '<h2 class="novedad-item__title">' + escHtml(item.titulo) + '</h2>' +
-                '<p class="novedad-item__body">'  + escHtml(item.cuerpo)  + '</p>';
+                '<p class="novedad-item__body">' + escHtml(item.cuerpo) + '</p>';
         }
+        slide.appendChild(inner);
+        wrap.appendChild(slide);
 
-        list.appendChild(el);
+        const dot = document.createElement('span');
+        dot.className = 'novedades-dot' + (idx === 0 ? ' is-active' : '');
+        dotsEl.appendChild(dot);
     });
 
-    // Auto-scroll si el contenido supera el viewport
-    requestAnimationFrame(function() {
-        var viewH = viewport.clientHeight;
-        var listH = list.scrollHeight;
-        if (listH > viewH + 10) {
-            var distance = listH - viewH;
-            var duration = Math.max(14, distance / 45);
-            list.style.setProperty('--scroll-distance', '-' + distance + 'px');
-            list.style.setProperty('--scroll-duration', duration + 's');
-            list.classList.add('is-scrolling');
-        }
-    });
+    viewport.appendChild(wrap);
+    if (items.length > 1) viewport.appendChild(dotsEl);
+
+    if (items.length > 1) {
+        const slides = Array.from(wrap.querySelectorAll('.novedades-slide'));
+        const dots   = Array.from(dotsEl.querySelectorAll('.novedades-dot'));
+        let current  = 0;
+        setInterval(function() {
+            slides[current].classList.remove('is-active');
+            dots[current].classList.remove('is-active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('is-active');
+            dots[current].classList.add('is-active');
+        }, 8000);
+    }
 }
 
 async function loadNovedades() {
@@ -705,15 +782,16 @@ function renderCumple(items) {
         return;
     }
 
-    matching.forEach(function(item) {
+    matching.forEach(function(item, idx) {
         const parts    = item.fecha.split('/');
         const dayLabel = dateIndex[pad(parts[0])+'/'+pad(parts[1])] || '';
         const initials = item.nombre.split(' ').filter(w => w.length > 1)
             .slice(0,2).map(w => w[0].toUpperCase()).join('');
         const el = document.createElement('div');
         el.className = 'cumple-item';
+        el.style.animationDelay = (idx * 0.12) + 's';
         el.innerHTML =
-            '<div class="cumple-item__avatar">' + escHtml(initials) + '</div>' +
+            '<div class="cumple-item__avatar" style="animation-delay:' + (idx * 0.35) + 's">' + escHtml(initials) + '</div>' +
             '<div class="cumple-item__info">' +
             '<div class="cumple-item__name">' + escHtml(item.nombre) + '</div>' +
             '<div class="cumple-item__grado">' + escHtml(item.grado || '') + '</div>' +
@@ -721,6 +799,22 @@ function renderCumple(items) {
             '<span class="cumple-item__badge">' + escHtml(dayLabel) + '</span>';
         list.appendChild(el);
     });
+
+    // Emojis flotantes festivos
+    const cardBody = document.querySelector('#card-cumple .card__body');
+    if (cardBody) {
+        cardBody.querySelectorAll('.cumple-float').forEach(function(e) { e.remove(); });
+        ['🎂', '🎈', '🎉', '✨', '🎁', '🎊'].forEach(function(emoji, i) {
+            const span = document.createElement('span');
+            span.className = 'cumple-float';
+            span.textContent = emoji;
+            span.style.cssText =
+                'left:' + (8 + i * 15) + '%;' +
+                '--dur:' + (5 + i * 0.7) + 's;' +
+                '--delay:' + (i * 1.1) + 's;';
+            cardBody.appendChild(span);
+        });
+    }
 }
 
 async function loadCumple() {
