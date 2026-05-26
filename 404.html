@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagina no encontrada | Colegio Del Solar</title>
+    <meta name="description" content="La pagina que buscabas no esta disponible. Volve al inicio del Colegio Del Solar.">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #10438a;
+            --ink-soft: #1a5299;
+            --accent: #fdcd24;
+            --bg: #f4f7fb;
+            --surface: #ffffff;
+            --text: #334155;
+            --muted: #5d718b;
+            --line: #d8e3f2;
+            --shadow: 0 20px 52px rgba(10, 54, 120, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Manrope', sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(700px 360px at 90% -8%, rgba(253, 205, 36, 0.26), transparent 70%),
+                radial-gradient(700px 380px at 0% 10%, rgba(16, 67, 138, 0.15), transparent 72%),
+                var(--bg);
+            display: grid;
+            place-items: center;
+            padding: 1.2rem;
+        }
+
+        .error-shell {
+            width: min(780px, 100%);
+            border-radius: 1.5rem;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .error-top {
+            background: linear-gradient(125deg, #10438a, #1d61b0);
+            color: #fff;
+            padding: 1.4rem 1.4rem 1.1rem;
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .error-top small {
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 800;
+            opacity: 0.86;
+            font-size: 0.74rem;
+        }
+
+        .error-top h1 {
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 5vw, 3.15rem);
+            line-height: 0.95;
+        }
+
+        .error-body {
+            padding: 1.25rem 1.4rem 1.45rem;
+        }
+
+        .error-body p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 1rem;
+            max-width: 62ch;
+        }
+
+        .quick-links {
+            margin: 1.1rem 0 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.65rem;
+        }
+
+        .quick-links a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 2.7rem;
+            border-radius: 999px;
+            border: 1px solid rgba(16, 67, 138, 0.15);
+            color: var(--ink-soft);
+            font-weight: 700;
+            text-decoration: none;
+            background: #fff;
+            transition: all 0.25s ease;
+        }
+
+        .quick-links a:hover {
+            transform: translateY(-1px);
+            border-color: rgba(16, 67, 138, 0.32);
+            background: #f8fbff;
+        }
+
+        .quick-links a.primary {
+            background: var(--ink);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .quick-links a.primary:hover {
+            background: #1654a5;
+        }
+
+        .error-note {
+            margin-top: 1rem;
+            padding: 0.8rem 0.9rem;
+            border-radius: 0.9rem;
+            background: #fff9e8;
+            color: #6a550f;
+            border: 1px solid rgba(253, 205, 36, 0.35);
+            font-size: 0.93rem;
+        }
+
+        @media (max-width: 760px) {
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="error-shell" aria-labelledby="error-title">
+        <section class="error-top">
+            <small>Colegio Del Solar</small>
+            <h1 id="error-title">No pudimos encontrar esa pagina</h1>
+        </section>
+
+        <section class="error-body">
+            <p>Puede que el enlace haya cambiado o que la direccion este incompleta. Te dejamos accesos rapidos para que sigas navegando sin perderte.</p>
+
+            <ul class="quick-links" aria-label="Accesos rapidos">
+                <li><a class="primary" href="index.html">Ir al inicio</a></li>
+                <li><a href="tienda-escolar.html">Tienda escolar</a></li>
+                <li><a href="index.html#contacto">Contacto</a></li>
+            </ul>
+
+            <p class="error-note">Si llegaste desde un enlace guardado, actualizalo con la nueva direccion para evitar este mensaje.</p>
+        </section>
+    </main>
+</body>
+</html>
