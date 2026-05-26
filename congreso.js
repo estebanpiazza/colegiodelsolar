@@ -5,7 +5,7 @@ const EVENT_START_DATE = new Date('2026-09-18T09:00:00-03:00')
 const CHECKOUT_CONFIG = {
     mercadoPagoCheckoutUrl: '',
     mercadoPagoPreferenceEndpoint: 'api/mercadopago-preference.php',
-    confirmationEmail: 'admisiones@colegiodelsolar.edu.ar',
+    confirmationEmail: 'cebsa@colegiodelsolar.edu.ar',
     whatsappNumber: '',
     bankTransfer: {
         holder: '',
