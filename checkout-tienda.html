@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Tienda Escolar | Colegio Del Solar</title>
+    <meta name="description" content="Checkout de uniformes y materiales personalizados del Colegio Del Solar.">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tienda-escolar.css">
+</head>
+<body>
+    <header class="store-header">
+        <div class="container store-header__inner">
+            <a href="index.html" class="store-brand" aria-label="Volver al inicio de Colegio Del Solar">
+                <img src="Logo-Del-Solar (1).png" alt="Colegio Del Solar">
+            </a>
+            <nav class="store-nav" aria-label="Navegacion de tienda">
+                <a href="tienda-escolar.html">Tienda</a>
+                <a href="checkout-tienda.html" aria-current="page">Checkout</a>
+                <a href="index.html#admisiones">Admisiones</a>
+            </nav>
+            <a class="cart-pill" href="checkout-tienda.html" aria-label="Resumen de carrito">
+                <span>Items</span>
+                <strong data-cart-count>0</strong>
+            </a>
+        </div>
+    </header>
+
+    <main class="checkout-page">
+        <section class="store-hero">
+            <div class="container store-hero__grid">
+                <div class="store-hero__copy">
+                    <span class="eyebrow">Checkout seguro</span>
+                    <h1>Finalizar compra escolar</h1>
+                    <p>Confirma datos de facturacion, revisa cantidades y deja listo el pedido para conectarlo al backend de stock y pagos.</p>
+                </div>
+                <div class="store-hero__cards" aria-hidden="true">
+                    <article>
+                        <small>Paso 1</small>
+                        <strong>Resumen del pedido</strong>
+                    </article>
+                    <article>
+                        <small>Paso 2</small>
+                        <strong>Datos del comprador</strong>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="container checkout-layout">
+            <form class="checkout-form" data-checkout-form>
+                <h2>Datos del comprador</h2>
+                <p class="checkout-form__lead">Estos campos se usan para emitir comprobante y coordinar entrega.</p>
+
+                <div class="field-grid">
+                    <label>
+                        Nombre y apellido
+                        <input type="text" name="buyerName" required autocomplete="name">
+                    </label>
+                    <label>
+                        Email
+                        <input type="email" name="buyerEmail" required autocomplete="email">
+                    </label>
+                </div>
+
+                <div class="field-grid">
+                    <label>
+                        Telefono
+                        <input type="tel" name="buyerPhone" required autocomplete="tel">
+                    </label>
+                    <label>
+                        DNI
+                        <input type="text" name="buyerDni" required inputmode="numeric">
+                    </label>
+                </div>
+
+                <div class="field-grid">
+                    <label>
+                        Alumno/a
+                        <input type="text" name="studentName" required>
+                    </label>
+                    <label>
+                        Nivel
+                        <select name="studentLevel" required>
+                            <option value="">Seleccionar</option>
+                            <option value="inicial">Inicial</option>
+                            <option value="primaria">Primaria</option>
+                            <option value="secundaria">Secundaria</option>
+                        </select>
+                    </label>
+                </div>
+
+                <label>
+                    Observaciones de talle o entrega
+                    <textarea name="notes" rows="4" placeholder="Ej: buzo talle M, retirar por sede central"></textarea>
+                </label>
+
+                <div class="field-grid">
+                    <label>
+                        Metodo de pago
+                        <select name="paymentMethod" required>
+                            <option value="">Seleccionar</option>
+                            <option value="mercadopago">Mercado Pago</option>
+                            <option value="transferencia">Transferencia bancaria</option>
+                        </select>
+                    </label>
+                    <label>
+                        Tipo de entrega
+                        <select name="deliveryType" required>
+                            <option value="">Seleccionar</option>
+                            <option value="retiro">Retiro por sede</option>
+                            <option value="envio">Envio a domicilio</option>
+                        </select>
+                    </label>
+                </div>
+
+                <button type="submit" class="checkout-submit">Confirmar pedido</button>
+                <p class="checkout-status" data-checkout-status></p>
+            </form>
+
+            <aside class="checkout-summary" aria-live="polite">
+                <div class="checkout-summary__head">
+                    <h2>Resumen</h2>
+                    <a href="tienda-escolar.html">Seguir comprando</a>
+                </div>
+
+                <div class="checkout-items" data-checkout-items></div>
+
+                <dl class="checkout-totals">
+                    <div>
+                        <dt>Subtotal</dt>
+                        <dd data-total-subtotal>$0</dd>
+                    </div>
+                    <div>
+                        <dt>Envio estimado</dt>
+                        <dd data-total-shipping>$0</dd>
+                    </div>
+                    <div class="checkout-totals__grand">
+                        <dt>Total</dt>
+                        <dd data-total-grand>$0</dd>
+                    </div>
+                </dl>
+            </aside>
+        </section>
+    </main>
+
+    <template id="checkoutItemTemplate">
+        <article class="checkout-item">
+            <div>
+                <h3 class="checkout-item__name"></h3>
+                <p class="checkout-item__meta"></p>
+            </div>
+            <label class="checkout-item__size-field">
+                <span>Talle</span>
+                <select class="checkout-item__size-select" aria-label="Cambiar talle"></select>
+            </label>
+            <div class="checkout-item__controls">
+                <button type="button" data-action="decrease" aria-label="Restar unidad">-</button>
+                <strong class="checkout-item__qty"></strong>
+                <button type="button" data-action="increase" aria-label="Sumar unidad">+</button>
+                <button type="button" data-action="remove" class="checkout-item__remove">Quitar</button>
+            </div>
+        </article>
+    </template>
+
+    <script src="checkout-tienda.js" defer></script>
+</body>
+</html>

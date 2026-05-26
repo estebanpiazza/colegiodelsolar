@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda Escolar | Colegio Del Solar</title>
+    <meta name="description" content="Tienda escolar del Colegio Del Solar: uniformes oficiales y materiales personalizados.">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tienda-escolar.css">
+</head>
+<body>
+    <header class="store-header">
+        <div class="container store-header__inner">
+            <a href="index.html" class="store-brand" aria-label="Volver al inicio de Colegio Del Solar">
+                <img src="Logo-Del-Solar (1).png" alt="Colegio Del Solar">
+            </a>
+            <nav class="store-nav" aria-label="Navegacion de tienda">
+                <a href="tienda-escolar.html" aria-current="page">Tienda</a>
+                <a href="checkout-tienda.html">Checkout</a>
+                <a href="index.html#admisiones">Admisiones</a>
+            </nav>
+            <a class="cart-pill" href="checkout-tienda.html" aria-label="Ir al checkout">
+                <span>Carrito</span>
+                <strong data-cart-count>0</strong>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="store-hero">
+            <div class="container store-hero__grid">
+                <div class="store-hero__copy">
+                    <span class="eyebrow">Tienda oficial</span>
+                    <h1>Uniformes y materiales personalizados del Solar</h1>
+                    <p>Explora productos por categoria, talle, precio y disponibilidad. Esta vista esta lista para conectarse a una base de stock en el siguiente paso.</p>
+                </div>
+                <div class="store-hero__cards" aria-hidden="true">
+                    <article>
+                        <small>Categoria</small>
+                        <strong>Uniformes</strong>
+                    </article>
+                    <article>
+                        <small>Categoria</small>
+                        <strong>Materiales del Solar</strong>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="store-layout container">
+            <aside class="filters" aria-label="Filtros de productos">
+                <div class="filters__head">
+                    <h2>Filtros</h2>
+                    <button type="button" class="text-action" data-clear-filters>Limpiar</button>
+                </div>
+
+                <div class="filter-group">
+                    <label for="searchInput">Buscar</label>
+                    <input id="searchInput" type="search" placeholder="Ej: buzo, carpeta, remera..." data-filter-search>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-group__label">Categoria</span>
+                    <div class="chip-row" data-filter-category>
+                        <button type="button" class="chip is-active" data-value="all">Todas</button>
+                        <button type="button" class="chip" data-value="uniformes">Uniformes</button>
+                        <button type="button" class="chip" data-value="materiales">Materiales</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label for="maxPrice">Precio maximo: <strong data-price-label>$90.000</strong></label>
+                    <input id="maxPrice" type="range" min="3000" max="90000" step="500" value="90000" data-filter-price>
+                </div>
+
+                <div class="filter-group filter-group--inline">
+                    <label for="onlyStock">Solo con stock</label>
+                    <input id="onlyStock" type="checkbox" data-filter-stock>
+                </div>
+
+                <div class="filter-group">
+                    <label for="sortBy">Ordenar por</label>
+                    <select id="sortBy" data-filter-sort>
+                        <option value="featured">Destacados</option>
+                        <option value="price-asc">Precio menor a mayor</option>
+                        <option value="price-desc">Precio mayor a menor</option>
+                        <option value="name">Nombre (A-Z)</option>
+                    </select>
+                </div>
+            </aside>
+
+            <section class="products" aria-live="polite">
+                <div class="products__head">
+                    <h2>Catalogo de productos</h2>
+                    <p><strong data-results-count>0</strong> productos encontrados</p>
+                </div>
+                <div class="product-grid" data-product-grid></div>
+            </section>
+        </section>
+    </main>
+
+    <template id="productCardTemplate">
+        <article class="product-card">
+            <div class="product-card__media">
+                <span class="product-card__category"></span>
+                <strong class="product-card__badge"></strong>
+            </div>
+            <div class="product-card__body">
+                <h3 class="product-card__name"></h3>
+                <p class="product-card__desc"></p>
+                <ul class="product-card__meta"></ul>
+                <label class="product-card__size-field">
+                    <span>Talle</span>
+                    <select class="product-card__size-select" aria-label="Seleccionar talle"></select>
+                </label>
+                <div class="product-card__footer">
+                    <div>
+                        <small>Precio</small>
+                        <strong class="product-card__price"></strong>
+                    </div>
+                    <button type="button" class="button-add">Agregar</button>
+                </div>
+            </div>
+        </article>
+    </template>
+
+    <script src="tienda-escolar.js" defer></script>
+</body>
+</html>
