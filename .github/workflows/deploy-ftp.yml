@@ -13,6 +13,7 @@ jobs:
       FTP_SERVER: ${{ secrets.FTP_SERVER }}
       FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
       FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      FTP_SERVER_DIR: ${{ secrets.FTP_SERVER_DIR || '/web/' }}
 
     steps:
       - name: Checkout
@@ -26,7 +27,7 @@ jobs:
           test -n "$FTP_PASSWORD" || (echo "Missing secret: FTP_PASSWORD" && exit 1)
 
       - name: Deploy to FTP server
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ env.FTP_SERVER }}
           username: ${{ env.FTP_USERNAME }}
@@ -34,7 +35,8 @@ jobs:
           port: 21
           protocol: ftp
           local-dir: ./
-          server-dir: /web/
+          server-dir: ${{ env.FTP_SERVER_DIR }}
+          state-name: ftp-deploy-sync-state.json
           dangerous-clean-slate: false
           exclude: |
             **/.git*/**
@@ -42,8 +44,13 @@ jobs:
             **/.github/**
             **/.vscode/**
             **/.env
+            **/.htaccess
             **/node_modules/**
+            **/backups/**
             **/*.docx
             **/*.exe
             **/*.mp4
+            **/*.ps1
             **/BLOG_SETUP.md
+            **/STYLE_EXPORT.md
+            **/tools/task_log.txt
