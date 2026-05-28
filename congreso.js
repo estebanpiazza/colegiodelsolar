@@ -1,10 +1,11 @@
-const TICKET_PRICE = 45000
+const TICKET_PRICE = 55000
 const EVENT_NAME = 'CEBSA 2026 - Congreso de Educación y Bienestar Sur Argentino'
 const EVENT_START_DATE = new Date('2026-09-18T09:00:00-03:00')
 
 const CHECKOUT_CONFIG = {
     mercadoPagoCheckoutUrl: '',
     mercadoPagoPreferenceEndpoint: 'api/mercadopago-preference.php',
+    mercadoPagoLocalPreferenceEndpoint: 'http://127.0.0.1:8000/api/mercadopago-preference.php',
     confirmationEmail: 'cebsa@colegiodelsolar.edu.ar',
     whatsappNumber: '',
     bankTransfer: {
@@ -52,7 +53,12 @@ const selectors = {
     countdownSeconds: document.querySelector('[data-countdown-seconds]'),
     bankHolder: document.querySelector('[data-bank-holder]'),
     bankAlias: document.querySelector('[data-bank-alias]'),
-    bankCbu: document.querySelector('[data-bank-cbu]')
+    bankCbu: document.querySelector('[data-bank-cbu]'),
+    transferModal: document.getElementById('transfer-modal'),
+    transferModalClose: Array.from(document.querySelectorAll('[data-transfer-modal-close]')),
+    transferEmail: document.querySelector('[data-transfer-email]'),
+    transferTotal: document.querySelector('[data-transfer-total]'),
+    transferEmailLink: document.querySelector('[data-transfer-email-link]')
 }
 
 function formatPrice(value) {
@@ -177,9 +183,51 @@ function openConfirmationMessage(order) {
     window.location.href = emailUrl.toString()
 }
 
+function openTransferModal(order) {
+    if (!selectors.transferModal) {
+        openConfirmationMessage(order)
+        return
+    }
+
+    const message = buildOrderMessage(order)
+    const emailUrl = new URL(`mailto:${CHECKOUT_CONFIG.confirmationEmail}`)
+    emailUrl.searchParams.set('subject', 'Comprobante de transferencia - CEBSA 2026')
+    emailUrl.searchParams.set('body', message)
+
+    setText(selectors.transferEmail, CHECKOUT_CONFIG.confirmationEmail)
+    setText(selectors.transferTotal, formatPrice(order.total))
+
+    if (selectors.transferEmailLink) {
+        selectors.transferEmailLink.href = emailUrl.toString()
+    }
+
+    selectors.transferModal.hidden = false
+    document.body.classList.add('modal-open')
+}
+
+function closeTransferModal() {
+    if (!selectors.transferModal) return
+
+    selectors.transferModal.hidden = true
+    document.body.classList.remove('modal-open')
+}
+
+function getMercadoPagoPreferenceEndpoint() {
+    const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+    const isPhpServer = window.location.port === '8000'
+
+    if (isLocalHost && !isPhpServer) {
+        return CHECKOUT_CONFIG.mercadoPagoLocalPreferenceEndpoint
+    }
+
+    return CHECKOUT_CONFIG.mercadoPagoPreferenceEndpoint
+}
+
 async function redirectToMercadoPago(order) {
-    if (CHECKOUT_CONFIG.mercadoPagoPreferenceEndpoint) {
-        const response = await fetch(CHECKOUT_CONFIG.mercadoPagoPreferenceEndpoint, {
+    const preferenceEndpoint = getMercadoPagoPreferenceEndpoint()
+
+    if (preferenceEndpoint) {
+        const response = await fetch(preferenceEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -187,11 +235,19 @@ async function redirectToMercadoPago(order) {
             body: JSON.stringify(order)
         })
 
-        if (!response.ok) {
-            throw new Error('No se pudo crear la preferencia de Mercado Pago.')
+        const rawResponse = await response.text()
+        let data = {}
+
+        try {
+            data = rawResponse ? JSON.parse(rawResponse) : {}
+        } catch {
+            throw new Error('El servidor devolvió una respuesta inválida. Revisá el endpoint de Mercado Pago.')
         }
 
-        const data = await response.json()
+        if (!response.ok) {
+            throw new Error(data.detail || data.error || 'No se pudo crear la preferencia de Mercado Pago.')
+        }
+
         const checkoutUrl = data.init_point || data.sandbox_init_point
 
         if (!checkoutUrl) {
@@ -231,8 +287,8 @@ async function handleCheckoutSubmit(event) {
     try {
         if (paymentMethod === 'transfer') {
             localStorage.setItem('cebsa-last-order', JSON.stringify(order))
-            setStatus('Reserva generada. Enviá el detalle junto con el comprobante para confirmar la entrada.', 'success')
-            openConfirmationMessage(order)
+            setStatus('Reserva generada. La entrada se confirma cuando recibamos el comprobante de transferencia.', 'success')
+            openTransferModal(order)
             return
         }
 
@@ -321,10 +377,14 @@ function initCheckout() {
     })
 
     selectors.checkoutForm?.addEventListener('submit', handleCheckoutSubmit)
+    selectors.transferModalClose.forEach((button) => {
+        button.addEventListener('click', closeTransferModal)
+    })
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
             closeCart()
+            closeTransferModal()
         }
     })
 

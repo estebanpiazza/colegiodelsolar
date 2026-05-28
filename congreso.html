@@ -369,6 +369,37 @@
         </div>
     </footer>
 
+    <div class="payment-modal" id="transfer-modal" role="dialog" aria-modal="true" aria-labelledby="transfer-modal-title" hidden>
+        <div class="payment-modal__backdrop" data-transfer-modal-close></div>
+        <div class="payment-modal__panel">
+            <button class="payment-modal__close" type="button" aria-label="Cerrar" data-transfer-modal-close>
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+            <span class="section__eyebrow">Reserva pendiente</span>
+            <h2 id="transfer-modal-title">Tu entrada queda sujeta a la transferencia.</h2>
+            <p>
+                Para confirmar la reserva tenés que realizar la transferencia bancaria y enviar el comprobante al mail del congreso.
+            </p>
+            <dl class="payment-modal__summary">
+                <div>
+                    <dt>Mail del congreso</dt>
+                    <dd data-transfer-email>cebsa@colegiodelsolar.edu.ar</dd>
+                </div>
+                <div>
+                    <dt>Total reservado</dt>
+                    <dd data-transfer-total>$55.000</dd>
+                </div>
+            </dl>
+            <div class="payment-modal__actions">
+                <a class="button button--primary" href="mailto:cebsa@colegiodelsolar.edu.ar" data-transfer-email-link>Enviar comprobante</a>
+                <button class="button button--secondary" type="button" data-transfer-modal-close>Entendido</button>
+            </div>
+        </div>
+    </div>
+
     <script src="congreso.js"></script>
 </body>
 </html>
