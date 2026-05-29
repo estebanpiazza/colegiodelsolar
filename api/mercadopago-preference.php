@@ -43,6 +43,7 @@ function loadEnvFile(string $path): void
         }
 
         [$key, $value] = array_map('trim', explode('=', $trimmed, 2));
+        $key = ltrim($key, "\xEF\xBB\xBF");
         if ($key === '' || getenv($key) !== false) {
             continue;
         }
@@ -51,6 +52,22 @@ function loadEnvFile(string $path): void
         putenv($key . '=' . $value);
         $_ENV[$key] = $value;
         $_SERVER[$key] = $value;
+    }
+}
+
+function loadMercadoPagoEnv(): void
+{
+    $siteRoot = dirname(__DIR__);
+    $serverRoot = dirname($siteRoot);
+    $paths = [
+        $serverRoot . DIRECTORY_SEPARATOR . 'private' . DIRECTORY_SEPARATOR . '.env',
+        $siteRoot . DIRECTORY_SEPARATOR . 'private' . DIRECTORY_SEPARATOR . '.env',
+        $siteRoot . DIRECTORY_SEPARATOR . '.env',
+        __DIR__ . DIRECTORY_SEPARATOR . '.env',
+    ];
+
+    foreach (array_unique($paths) as $path) {
+        loadEnvFile($path);
     }
 }
 
@@ -203,12 +220,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-loadEnvFile(dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env');
+loadMercadoPagoEnv();
 [$accessToken, $mpMode] = mercadoPagoAccessToken();
 
 if ($accessToken === '') {
     http_response_code(500);
-    echo json_encode(['error' => 'Falta configurar el Access Token de Mercado Pago en el servidor.']);
+    echo json_encode([
+        'error' => 'Falta configurar el Access Token de Mercado Pago en el servidor.',
+        'detail' => 'Defini MP_ACCESS_TOKEN o MP_ACCESS_TOKEN_PROD en las variables de entorno, /private/.env o .env del sitio.',
+    ]);
     exit;
 }
 

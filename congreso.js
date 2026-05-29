@@ -58,7 +58,10 @@ const selectors = {
     transferModalClose: Array.from(document.querySelectorAll('[data-transfer-modal-close]')),
     transferEmail: document.querySelector('[data-transfer-email]'),
     transferTotal: document.querySelector('[data-transfer-total]'),
-    transferEmailLink: document.querySelector('[data-transfer-email-link]')
+    transferEmailLink: document.querySelector('[data-transfer-email-link]'),
+    paymentReturnModal: document.getElementById('payment-return-modal'),
+    paymentReturnModalClose: Array.from(document.querySelectorAll('[data-payment-return-close]')),
+    paymentReturnEmail: document.querySelector('[data-payment-return-email]')
 }
 
 function formatPrice(value) {
@@ -212,6 +215,38 @@ function closeTransferModal() {
     document.body.classList.remove('modal-open')
 }
 
+function openPaymentReturnModal() {
+    if (!selectors.paymentReturnModal) return
+
+    setText(selectors.paymentReturnEmail, CHECKOUT_CONFIG.confirmationEmail)
+    selectors.paymentReturnModal.hidden = false
+    document.body.classList.add('modal-open')
+}
+
+function closePaymentReturnModal() {
+    if (!selectors.paymentReturnModal) return
+
+    selectors.paymentReturnModal.hidden = true
+    document.body.classList.remove('modal-open')
+}
+
+function handleMercadoPagoReturn() {
+    const params = new URLSearchParams(window.location.search)
+    const paymentStatus = params.get('payment')
+
+    if (!paymentStatus) return
+
+    if (paymentStatus === 'success') {
+        openPaymentReturnModal()
+    } else if (paymentStatus === 'pending') {
+        setStatus('El pago quedó pendiente en Mercado Pago. Te avisaremos por mail cuando se confirme.', 'success')
+    } else if (paymentStatus === 'failure') {
+        setStatus('No se pudo completar el pago en Mercado Pago. Podés intentarlo nuevamente o elegir transferencia bancaria.', 'error')
+    }
+
+    window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`)
+}
+
 function getMercadoPagoPreferenceEndpoint() {
     const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname)
     const isPhpServer = window.location.port === '8000'
@@ -287,7 +322,7 @@ async function handleCheckoutSubmit(event) {
     try {
         if (paymentMethod === 'transfer') {
             localStorage.setItem('cebsa-last-order', JSON.stringify(order))
-            setStatus('Reserva generada. La entrada se confirma cuando recibamos el comprobante de transferencia.', 'success')
+            setStatus(`Reserva generada. Enviá el comprobante a ${CHECKOUT_CONFIG.confirmationEmail}; cuando se valide el pago te llegará por mail la confirmación con la entrada.`, 'success')
             openTransferModal(order)
             return
         }
@@ -380,17 +415,22 @@ function initCheckout() {
     selectors.transferModalClose.forEach((button) => {
         button.addEventListener('click', closeTransferModal)
     })
+    selectors.paymentReturnModalClose.forEach((button) => {
+        button.addEventListener('click', closePaymentReturnModal)
+    })
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
             closeCart()
             closeTransferModal()
+            closePaymentReturnModal()
         }
     })
 
     hydrateTransferData()
     updatePaymentUI()
     updateCart()
+    handleMercadoPagoReturn()
 }
 
 document.querySelector('[data-year]').textContent = String(new Date().getFullYear())
