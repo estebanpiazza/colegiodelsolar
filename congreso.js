@@ -25,6 +25,7 @@ const currencyFormatter = new Intl.NumberFormat('es-AR', {
     currency: 'ARS',
     maximumFractionDigits: 0
 })
+const EMAIL_MISMATCH_MESSAGE = 'Los emails no coinciden. Revisá que estén escritos igual.'
 
 const selectors = {
     header: document.getElementById('site-header'),
@@ -142,6 +143,33 @@ function getBuyerData(form) {
         phone: String(formData.get('buyerPhone') || '').trim(),
         dni: String(formData.get('buyerDni') || '').trim(),
         institution: String(formData.get('buyerInstitution') || '').trim()
+    }
+}
+
+function normalizeEmail(value) {
+    return String(value || '').trim().toLowerCase()
+}
+
+function validateMatchingEmails(form) {
+    const emailInput = form.elements.buyerEmail
+    const emailConfirmInput = form.elements.buyerEmailConfirm
+
+    if (!emailInput || !emailConfirmInput) return true
+
+    const email = normalizeEmail(emailInput.value)
+    const emailConfirm = normalizeEmail(emailConfirmInput.value)
+    const emailsMatch = !email || !emailConfirm || email === emailConfirm
+
+    emailConfirmInput.setCustomValidity(emailsMatch ? '' : EMAIL_MISMATCH_MESSAGE)
+    return emailsMatch
+}
+
+function handleEmailInput(event) {
+    const form = event.currentTarget.form
+    if (!form) return
+
+    if (validateMatchingEmails(form) && selectors.formStatus?.textContent === EMAIL_MISMATCH_MESSAGE) {
+        setStatus('')
     }
 }
 
@@ -313,8 +341,15 @@ async function handleCheckoutSubmit(event) {
     event.preventDefault()
 
     const form = event.currentTarget
-    if (!form.reportValidity()) return
+    const emailsMatch = validateMatchingEmails(form)
 
+    if (!form.reportValidity()) {
+        if (!emailsMatch) {
+            setStatus(EMAIL_MISMATCH_MESSAGE, 'error')
+            form.elements.buyerEmailConfirm?.focus()
+        }
+        return
+    }
     const order = buildOrderPayload(form)
     const paymentMethod = getSelectedPaymentMethod()
     const submitButton = form.querySelector('button[type="submit"]')
@@ -429,6 +464,9 @@ function initCheckout() {
 
     selectors.checkoutForm?.querySelectorAll('input[name="paymentMethod"]').forEach((input) => {
         input.addEventListener('change', handlePaymentChange)
+    })
+    selectors.checkoutForm?.querySelectorAll('input[name="buyerEmail"], input[name="buyerEmailConfirm"]').forEach((input) => {
+        input.addEventListener('input', handleEmailInput)
     })
 
     selectors.checkoutForm?.addEventListener('submit', handleCheckoutSubmit)
