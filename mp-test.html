@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Prueba Mercado Pago CEBSA</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #14213d;
+            --muted: #566276;
+            --line: rgba(20, 33, 61, 0.14);
+            --primary: #0059b2;
+            --surface: #ffffff;
+            --soft: #f4f7fb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 1rem;
+            background: var(--soft);
+            color: var(--ink);
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            width: min(100%, 30rem);
+            display: grid;
+            gap: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface);
+            box-shadow: 0 18px 50px rgba(20, 33, 61, 0.12);
+        }
+
+        h1,
+        p {
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            line-height: 1.1;
+        }
+
+        p {
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .price {
+            padding: 0.9rem;
+            border-radius: 8px;
+            background: #eef6ff;
+            color: var(--ink);
+            font-weight: 800;
+        }
+
+        form {
+            display: grid;
+            gap: 0.85rem;
+        }
+
+        label {
+            display: grid;
+            gap: 0.35rem;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        input {
+            width: 100%;
+            min-height: 2.75rem;
+            padding: 0.75rem;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            color: var(--ink);
+            font: inherit;
+        }
+
+        button {
+            min-height: 2.9rem;
+            border: 0;
+            border-radius: 8px;
+            background: var(--primary);
+            color: #ffffff;
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            cursor: wait;
+            opacity: 0.7;
+        }
+
+        .status {
+            min-height: 1.3rem;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .status.is-error {
+            color: #b42318;
+        }
+
+        .status.is-success {
+            color: #137333;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Prueba Mercado Pago CEBSA</h1>
+        <p>Producto de prueba para verificar pago, retorno, webhook, registro y mails. No corresponde a una entrada.</p>
+        <div class="price">Total: ARS 100</div>
+
+        <form id="test-form">
+            <label>
+                Nombre
+                <input name="name" autocomplete="name" required placeholder="Nombre de prueba">
+            </label>
+            <label>
+                Email
+                <input name="email" type="email" autocomplete="email" required placeholder="mail@ejemplo.com">
+            </label>
+            <label>
+                Telefono
+                <input name="phone" type="tel" autocomplete="tel" placeholder="+54 9 ...">
+            </label>
+            <button type="submit">Pagar prueba de ARS 100</button>
+            <p class="status" id="status" role="status" aria-live="polite"></p>
+        </form>
+    </main>
+
+    <script>
+        const form = document.getElementById('test-form')
+        const status = document.getElementById('status')
+
+        function setStatus(message, type = '') {
+            status.textContent = message
+            status.className = `status${type ? ` is-${type}` : ''}`
+        }
+
+        function handleReturn() {
+            const params = new URLSearchParams(window.location.search)
+            const payment = params.get('payment')
+            if (!payment) return
+
+            if (payment === 'success') {
+                setStatus('Pago aprobado. Revisá el mail de confirmación y el registro del congreso.', 'success')
+            } else if (payment === 'pending') {
+                setStatus('Pago pendiente. Mercado Pago avisará al webhook cuando se resuelva.', 'success')
+            } else if (payment === 'failure') {
+                setStatus('El pago no se completó. Podés intentar otra vez.', 'error')
+            }
+
+            window.history.replaceState({}, document.title, window.location.pathname)
+        }
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault()
+            if (!form.reportValidity()) return
+
+            const button = form.querySelector('button')
+            const formData = new FormData(form)
+            button.disabled = true
+            setStatus('Creando preferencia en Mercado Pago...')
+
+            try {
+                const response = await fetch('api/mercadopago-test-preference.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        buyer: {
+                            name: String(formData.get('name') || '').trim(),
+                            email: String(formData.get('email') || '').trim(),
+                            phone: String(formData.get('phone') || '').trim()
+                        }
+                    })
+                })
+
+                const rawResponse = await response.text()
+                let data = {}
+
+                if (rawResponse) {
+                    try {
+                        data = JSON.parse(rawResponse)
+                    } catch {
+                        throw new Error('El servidor devolvió una respuesta inválida. Probá desde https://colegiodelsolar.edu.ar/mp-test.html.')
+                    }
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.detail || data.error || 'No se pudo crear la preferencia.')
+                }
+
+                if (!rawResponse) {
+                    throw new Error('El servidor no devolvió respuesta. Probá recargando la página de prueba.')
+                }
+
+                const checkoutUrl = data.init_point || data.sandbox_init_point
+                if (!checkoutUrl) {
+                    throw new Error('Mercado Pago no devolvió URL de checkout.')
+                }
+
+                window.location.href = checkoutUrl
+            } catch (error) {
+                setStatus(error.message, 'error')
+                button.disabled = false
+            }
+        })
+
+        handleReturn()
+    </script>
+</body>
+</html>

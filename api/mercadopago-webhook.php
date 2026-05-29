@@ -210,6 +210,9 @@ function paymentEmailDetails(array $payment): array
         'buyer_dni' => (string)($metadata['buyer_dni'] ?? '-'),
         'buyer_institution' => (string)($metadata['buyer_institution'] ?? '-'),
         'quantity' => (string)($metadata['quantity'] ?? '-'),
+        'product_label' => (string)($metadata['product_label'] ?? $metadata['event'] ?? 'entrada para CEBSA 2026'),
+        'source' => (string)($metadata['source'] ?? '-'),
+        'is_test_purchase' => (string)($metadata['is_test_purchase'] ?? 'false'),
     ];
 }
 
@@ -240,6 +243,7 @@ function sendCongressPaymentEmail(array $payment): bool
     $subject = 'Pago aprobado por Mercado Pago - CEBSA 2026';
     $body = implode("\n", [
         'Se aprobó un pago por Mercado Pago para CEBSA 2026.',
+        'Producto: ' . $details['product_label'],
         '',
         'Datos del pago:',
         'ID de pago: ' . $details['payment_id'],
@@ -255,6 +259,8 @@ function sendCongressPaymentEmail(array $payment): bool
         'DNI: ' . $details['buyer_dni'],
         'Institución / ciudad: ' . $details['buyer_institution'],
         'Entradas: ' . $details['quantity'],
+        'Origen: ' . $details['source'],
+        'Compra de prueba: ' . $details['is_test_purchase'],
     ]);
 
     $headers = paymentMailHeaders(congressEmailAddress(), $details['payer_email']);
@@ -281,7 +287,7 @@ function sendBuyerPaymentEmail(array $payment): bool
     $body = implode("\n", [
         'Hola ' . $details['payer_name'] . ',',
         '',
-        'Tu compra de entrada para CEBSA 2026 fue confirmada por Mercado Pago.',
+        'Tu compra de ' . $details['product_label'] . ' fue confirmada por Mercado Pago.',
         '',
         'Datos de la compra:',
         'Referencia: ' . $details['external_reference'],
@@ -346,6 +352,9 @@ function registerApprovedPayment(array $payment, bool $congressEmailSent, bool $
                 'buyer_phone',
                 'buyer_dni',
                 'buyer_institution',
+                'product_label',
+                'source',
+                'is_test_purchase',
                 'congress_email_sent',
                 'buyer_email_sent',
             ]);
@@ -364,6 +373,9 @@ function registerApprovedPayment(array $payment, bool $congressEmailSent, bool $
             $details['buyer_phone'],
             $details['buyer_dni'],
             $details['buyer_institution'],
+            $details['product_label'],
+            $details['source'],
+            $details['is_test_purchase'],
             $congressEmailSent ? 'yes' : 'no',
             $buyerEmailSent ? 'yes' : 'no',
         ]);
