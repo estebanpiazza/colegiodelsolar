@@ -145,6 +145,51 @@ function congressEmailAddress(): string
     return $email ?: 'cebsa@colegiodelsolar.edu.ar';
 }
 
+function congressNotificationRecipients(): array
+{
+    $candidates = [
+        congressEmailAddress(),
+    ];
+
+    $extraRecipients = envValue(['CONGRESS_COPY_EMAILS', 'CONGRESS_BCC_EMAILS', 'PAYMENT_NOTIFICATION_EMAILS']);
+    if ($extraRecipients !== '') {
+        $candidates = array_merge($candidates, preg_split('/[,;]/', $extraRecipients) ?: []);
+    }
+
+    $recipients = [];
+    foreach ($candidates as $candidate) {
+        $email = filter_var(trim((string)$candidate), FILTER_VALIDATE_EMAIL);
+        if ($email && !in_array($email, $recipients, true)) {
+            $recipients[] = $email;
+        }
+    }
+
+    return $recipients;
+}
+
+function privateStoragePath(string $filename): string
+{
+    $siteRoot = dirname(__DIR__);
+    $serverRoot = dirname($siteRoot);
+    $directories = [
+        $serverRoot . DIRECTORY_SEPARATOR . 'private',
+        $siteRoot . DIRECTORY_SEPARATOR . 'private',
+        sys_get_temp_dir(),
+    ];
+
+    foreach ($directories as $directory) {
+        if (!is_dir($directory)) {
+            @mkdir($directory, 0755, true);
+        }
+
+        if (is_dir($directory) && is_writable($directory)) {
+            return rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $filename;
+        }
+    }
+
+    return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $filename;
+}
+
 function paymentEmailDetails(array $payment): array
 {
     $metadata = is_array($payment['metadata'] ?? null) ? $payment['metadata'] : [];
@@ -185,8 +230,12 @@ function paymentMailHeaders(string $fromEmail, string $replyTo = ''): array
 
 function sendCongressPaymentEmail(array $payment): bool
 {
-    $recipient = congressEmailAddress();
+    $recipients = congressNotificationRecipients();
     $details = paymentEmailDetails($payment);
+
+    if ($recipients === []) {
+        return false;
+    }
 
     $subject = 'Pago aprobado por Mercado Pago - CEBSA 2026';
     $body = implode("\n", [
@@ -208,9 +257,14 @@ function sendCongressPaymentEmail(array $payment): bool
         'Entradas: ' . $details['quantity'],
     ]);
 
-    $headers = paymentMailHeaders($recipient, $details['payer_email']);
+    $headers = paymentMailHeaders(congressEmailAddress(), $details['payer_email']);
 
-    return mail($recipient, $subject, $body, implode("\r\n", $headers));
+    $sent = true;
+    foreach ($recipients as $recipient) {
+        $sent = mail($recipient, $subject, $body, implode("\r\n", $headers)) && $sent;
+    }
+
+    return $sent;
 }
 
 function sendBuyerPaymentEmail(array $payment): bool
@@ -252,7 +306,79 @@ function paymentNotificationMarkerPath(string $paymentId, string $emailType = 'a
     $safePaymentId = preg_replace('/[^a-zA-Z0-9_-]/', '', $paymentId);
     $safeEmailType = preg_replace('/[^a-zA-Z0-9_-]/', '', $emailType);
 
-    return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cebsa-mp-payment-' . $safePaymentId . '-' . $safeEmailType . '.sent';
+    return privateStoragePath('cebsa-mp-payment-' . $safePaymentId . '-' . $safeEmailType . '.sent');
+}
+
+function registerApprovedPayment(array $payment, bool $congressEmailSent, bool $buyerEmailSent): bool
+{
+    $details = paymentEmailDetails($payment);
+    $paymentId = (string)($payment['id'] ?? '');
+    $registeredMarkerPath = paymentNotificationMarkerPath($paymentId, 'registered');
+
+    if ($paymentId === '') {
+        return false;
+    }
+
+    if (is_file($registeredMarkerPath)) {
+        return true;
+    }
+
+    $logPath = privateStoragePath('mercadopago-payments.csv');
+    $isNewFile = !is_file($logPath) || filesize($logPath) === 0;
+    $handle = @fopen($logPath, 'ab');
+
+    if ($handle === false) {
+        return false;
+    }
+
+    if (flock($handle, LOCK_EX)) {
+        if ($isNewFile) {
+            fputcsv($handle, [
+                'registered_at',
+                'payment_id',
+                'external_reference',
+                'status',
+                'amount_ars',
+                'payment_method',
+                'quantity',
+                'buyer_name',
+                'buyer_email',
+                'buyer_phone',
+                'buyer_dni',
+                'buyer_institution',
+                'congress_email_sent',
+                'buyer_email_sent',
+            ]);
+        }
+
+        fputcsv($handle, [
+            date(DATE_ATOM),
+            $details['payment_id'],
+            $details['external_reference'],
+            $details['status'],
+            $details['amount'],
+            $details['payment_method'],
+            $details['quantity'],
+            $details['payer_name'],
+            $details['payer_email'],
+            $details['buyer_phone'],
+            $details['buyer_dni'],
+            $details['buyer_institution'],
+            $congressEmailSent ? 'yes' : 'no',
+            $buyerEmailSent ? 'yes' : 'no',
+        ]);
+
+        fflush($handle);
+        flock($handle, LOCK_UN);
+        fclose($handle);
+        @file_put_contents($registeredMarkerPath, date(DATE_ATOM));
+
+        return true;
+    }
+
+    fclose($handle);
+
+    return false;
 }
 
 function paymentIdFromNotification(array $payload): string
@@ -325,9 +451,24 @@ if (($payment['status'] ?? '') !== 'approved') {
 }
 
 $paymentMarkerId = (string)($payment['id'] ?? $paymentId);
-$legacyMarkerPath = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cebsa-mp-payment-' . preg_replace('/[^a-zA-Z0-9_-]/', '', $paymentMarkerId) . '.sent';
-if (is_file($legacyMarkerPath)) {
-    echo json_encode(['ok' => true, 'payment_status' => 'approved', 'email_sent' => false, 'duplicate' => true]);
+$allMarkerPath = paymentNotificationMarkerPath($paymentMarkerId, 'all');
+$temporaryLegacyMarkerPath = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cebsa-mp-payment-' . preg_replace('/[^a-zA-Z0-9_-]/', '', $paymentMarkerId) . '.sent';
+if (is_file($allMarkerPath) || is_file($temporaryLegacyMarkerPath)) {
+    $registered = registerApprovedPayment($payment, true, true);
+
+    if (!$registered) {
+        http_response_code(500);
+        echo json_encode(['error' => 'No se pudo registrar el pago aprobado.']);
+        exit;
+    }
+
+    echo json_encode([
+        'ok' => true,
+        'payment_status' => 'approved',
+        'email_sent' => false,
+        'duplicate' => true,
+        'registered' => $registered,
+    ]);
     exit;
 }
 
@@ -351,8 +492,15 @@ if (!$buyerEmailSent) {
 }
 
 $emailSent = $congressEmailSent && $buyerEmailSent;
+$registered = registerApprovedPayment($payment, $congressEmailSent, $buyerEmailSent);
+if (!$registered) {
+    http_response_code(500);
+    echo json_encode(['error' => 'No se pudo registrar el pago aprobado.']);
+    exit;
+}
+
 if ($emailSent) {
-    @file_put_contents($legacyMarkerPath, date(DATE_ATOM));
+    @file_put_contents($allMarkerPath, date(DATE_ATOM));
 }
 
 echo json_encode([
@@ -361,4 +509,5 @@ echo json_encode([
     'email_sent' => $emailSent,
     'congress_email_sent' => $congressEmailSent,
     'buyer_email_sent' => $buyerEmailSent,
+    'registered' => $registered,
 ]);

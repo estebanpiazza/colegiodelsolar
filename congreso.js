@@ -9,9 +9,10 @@ const CHECKOUT_CONFIG = {
     confirmationEmail: 'cebsa@colegiodelsolar.edu.ar',
     whatsappNumber: '',
     bankTransfer: {
-        holder: '',
-        alias: '',
-        cbu: ''
+        holder: 'GASTON CASANOVA',
+        cuit: '20-32586610-2',
+        accountNumber: '0010799-2 082-6',
+        cbu: '0070082520000010799262'
     }
 }
 
@@ -52,8 +53,10 @@ const selectors = {
     countdownMinutes: document.querySelector('[data-countdown-minutes]'),
     countdownSeconds: document.querySelector('[data-countdown-seconds]'),
     bankHolder: document.querySelector('[data-bank-holder]'),
-    bankAlias: document.querySelector('[data-bank-alias]'),
+    bankCuit: document.querySelector('[data-bank-cuit]'),
+    bankAccount: document.querySelector('[data-bank-account]'),
     bankCbu: document.querySelector('[data-bank-cbu]'),
+    bankCbuCopy: document.querySelector('[data-bank-cbu-copy]'),
     transferModal: document.getElementById('transfer-modal'),
     transferModalClose: Array.from(document.querySelectorAll('[data-transfer-modal-close]')),
     transferEmail: document.querySelector('[data-transfer-email]'),
@@ -337,8 +340,24 @@ async function handleCheckoutSubmit(event) {
 
 function hydrateTransferData() {
     setText(selectors.bankHolder, CHECKOUT_CONFIG.bankTransfer.holder || 'A completar')
-    setText(selectors.bankAlias, CHECKOUT_CONFIG.bankTransfer.alias || 'A completar')
+    setText(selectors.bankCuit, CHECKOUT_CONFIG.bankTransfer.cuit || 'A completar')
+    setText(selectors.bankAccount, CHECKOUT_CONFIG.bankTransfer.accountNumber || 'A completar')
     setText(selectors.bankCbu, CHECKOUT_CONFIG.bankTransfer.cbu || 'A completar')
+}
+
+async function copyBankCbu() {
+    const cbu = CHECKOUT_CONFIG.bankTransfer.cbu
+    if (!cbu || !selectors.bankCbuCopy) return
+
+    try {
+        await navigator.clipboard.writeText(cbu)
+        selectors.bankCbuCopy.textContent = 'Copiado'
+        window.setTimeout(() => {
+            selectors.bankCbuCopy.textContent = 'Copiar'
+        }, 1800)
+    } catch {
+        setStatus('No se pudo copiar el CBU automáticamente. Seleccionalo y copialo manualmente.', 'error')
+    }
 }
 
 function updateCountdown() {
@@ -406,6 +425,7 @@ function initCheckout() {
     selectors.quantityIncrease?.addEventListener('click', () => changeQuantity(state.quantity + 1))
     selectors.cartToggle?.addEventListener('click', openCart)
     selectors.cartClose?.addEventListener('click', closeCart)
+    selectors.bankCbuCopy?.addEventListener('click', copyBankCbu)
 
     selectors.checkoutForm?.querySelectorAll('input[name="paymentMethod"]').forEach((input) => {
         input.addEventListener('change', handlePaymentChange)
