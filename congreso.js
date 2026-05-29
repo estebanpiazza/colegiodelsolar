@@ -12,7 +12,8 @@ const CHECKOUT_CONFIG = {
         holder: 'GASTON CASANOVA',
         cuit: '20-32586610-2',
         accountNumber: '0010799-2 082-6',
-        cbu: '0070082520000010799262'
+        cbu: '0070082520000010799262',
+        alias: 'MUNDO.ONDA.LASTRE'
     }
 }
 
@@ -58,6 +59,8 @@ const selectors = {
     bankAccount: document.querySelector('[data-bank-account]'),
     bankCbu: document.querySelector('[data-bank-cbu]'),
     bankCbuCopy: document.querySelector('[data-bank-cbu-copy]'),
+    bankAlias: document.querySelector('[data-bank-alias]'),
+    bankAliasCopy: document.querySelector('[data-bank-alias-copy]'),
     transferModal: document.getElementById('transfer-modal'),
     transferModalClose: Array.from(document.querySelectorAll('[data-transfer-modal-close]')),
     transferEmail: document.querySelector('[data-transfer-email]'),
@@ -378,6 +381,7 @@ function hydrateTransferData() {
     setText(selectors.bankCuit, CHECKOUT_CONFIG.bankTransfer.cuit || 'A completar')
     setText(selectors.bankAccount, CHECKOUT_CONFIG.bankTransfer.accountNumber || 'A completar')
     setText(selectors.bankCbu, CHECKOUT_CONFIG.bankTransfer.cbu || 'A completar')
+    setText(selectors.bankAlias, CHECKOUT_CONFIG.bankTransfer.alias || 'A completar')
 }
 
 async function copyBankCbu() {
@@ -392,6 +396,21 @@ async function copyBankCbu() {
         }, 1800)
     } catch {
         setStatus('No se pudo copiar el CBU automáticamente. Seleccionalo y copialo manualmente.', 'error')
+    }
+}
+
+async function copyBankAlias() {
+    const alias = CHECKOUT_CONFIG.bankTransfer.alias
+    if (!alias || !selectors.bankAliasCopy) return
+
+    try {
+        await navigator.clipboard.writeText(alias)
+        selectors.bankAliasCopy.textContent = 'Copiado'
+        window.setTimeout(() => {
+            selectors.bankAliasCopy.textContent = 'Copiar'
+        }, 1800)
+    } catch {
+        setStatus('No se pudo copiar el alias automaticamente. Seleccionalo y copialo manualmente.', 'error')
     }
 }
 
@@ -461,6 +480,7 @@ function initCheckout() {
     selectors.cartToggle?.addEventListener('click', openCart)
     selectors.cartClose?.addEventListener('click', closeCart)
     selectors.bankCbuCopy?.addEventListener('click', copyBankCbu)
+    selectors.bankAliasCopy?.addEventListener('click', copyBankAlias)
 
     selectors.checkoutForm?.querySelectorAll('input[name="paymentMethod"]').forEach((input) => {
         input.addEventListener('change', handlePaymentChange)
