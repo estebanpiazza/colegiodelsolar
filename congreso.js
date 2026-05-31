@@ -6,6 +6,7 @@ const CHECKOUT_CONFIG = {
     mercadoPagoCheckoutUrl: '',
     mercadoPagoPreferenceEndpoint: 'api/mercadopago-preference.php',
     mercadoPagoLocalPreferenceEndpoint: 'http://127.0.0.1:8000/api/mercadopago-preference.php',
+    registrationsPublicCountEndpoint: 'api/inscripciones-public-count.php',
     confirmationEmail: 'cebsa@colegiodelsolar.edu.ar',
     whatsappNumber: '',
     bankTransfer: {
@@ -58,7 +59,8 @@ const selectors = {
     transferModalClose: Array.from(document.querySelectorAll('[data-transfer-modal-close]')),
     transferEmail: document.querySelector('[data-transfer-email]'),
     transferTotal: document.querySelector('[data-transfer-total]'),
-    transferEmailLink: document.querySelector('[data-transfer-email-link]')
+    transferEmailLink: document.querySelector('[data-transfer-email-link]'),
+    publicInscriptos: document.querySelector('[data-public-inscriptos]')
 }
 
 function formatPrice(value) {
@@ -306,6 +308,27 @@ function hydrateTransferData() {
     setText(selectors.bankCbu, CHECKOUT_CONFIG.bankTransfer.cbu || 'A completar')
 }
 
+async function hydratePublicInscriptosCounter() {
+    if (!selectors.publicInscriptos || !CHECKOUT_CONFIG.registrationsPublicCountEndpoint) return
+
+    try {
+        const response = await fetch(CHECKOUT_CONFIG.registrationsPublicCountEndpoint, {
+            method: 'GET',
+            cache: 'no-store'
+        })
+
+        if (!response.ok) return
+
+        const data = await response.json()
+        const total = Number.parseInt(String(data.total_personas ?? ''), 10)
+        if (!Number.isFinite(total) || total < 0) return
+
+        selectors.publicInscriptos.textContent = `rsv: ${total}`
+    } catch {
+        // Contador opcional: si falla, no bloquea el checkout.
+    }
+}
+
 function updateCountdown() {
     if (!selectors.countdown) return
 
@@ -398,3 +421,4 @@ initNavigation()
 initReveal()
 initCheckout()
 initCountdown()
+hydratePublicInscriptosCounter()

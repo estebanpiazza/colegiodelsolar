@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'inscripciones-store.php';
 
 function loadEnvFile(string $path): void
 {
@@ -239,9 +240,19 @@ if (($payment['status'] ?? '') !== 'approved') {
     exit;
 }
 
+$registrationStored = inscripcionesUpsertFromApprovedPayment($payment);
+$totals = inscripcionesGetTotals();
+
 $markerPath = paymentNotificationMarkerPath((string)($payment['id'] ?? $paymentId));
 if (is_file($markerPath)) {
-    echo json_encode(['ok' => true, 'payment_status' => 'approved', 'email_sent' => false, 'duplicate' => true]);
+    echo json_encode([
+        'ok' => true,
+        'payment_status' => 'approved',
+        'email_sent' => false,
+        'duplicate' => true,
+        'registration_stored' => $registrationStored,
+        'registrations_total' => $totals['personas'],
+    ]);
     exit;
 }
 
@@ -250,4 +261,10 @@ if ($emailSent) {
     @file_put_contents($markerPath, date(DATE_ATOM));
 }
 
-echo json_encode(['ok' => true, 'payment_status' => 'approved', 'email_sent' => $emailSent]);
+echo json_encode([
+    'ok' => true,
+    'payment_status' => 'approved',
+    'email_sent' => $emailSent,
+    'registration_stored' => $registrationStored,
+    'registrations_total' => $totals['personas'],
+]);
