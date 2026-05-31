@@ -10,9 +10,11 @@ const CHECKOUT_CONFIG = {
     confirmationEmail: 'cebsa@colegiodelsolar.edu.ar',
     whatsappNumber: '',
     bankTransfer: {
-        holder: '',
-        alias: '',
-        cbu: ''
+        holder: 'GASTON CASANOVA',
+        cuit: '20-32586610-2',
+        accountNumber: '0010799-2 082-6',
+        cbu: '0070082520000010799262',
+        alias: 'MUNDO.ONDA.LASTRE'
     }
 }
 
@@ -25,6 +27,7 @@ const currencyFormatter = new Intl.NumberFormat('es-AR', {
     currency: 'ARS',
     maximumFractionDigits: 0
 })
+const EMAIL_MISMATCH_MESSAGE = 'Los emails no coinciden. Revisá que estén escritos igual.'
 
 const selectors = {
     header: document.getElementById('site-header'),
@@ -53,14 +56,21 @@ const selectors = {
     countdownMinutes: document.querySelector('[data-countdown-minutes]'),
     countdownSeconds: document.querySelector('[data-countdown-seconds]'),
     bankHolder: document.querySelector('[data-bank-holder]'),
-    bankAlias: document.querySelector('[data-bank-alias]'),
+    bankCuit: document.querySelector('[data-bank-cuit]'),
+    bankAccount: document.querySelector('[data-bank-account]'),
     bankCbu: document.querySelector('[data-bank-cbu]'),
+    bankCbuCopy: document.querySelector('[data-bank-cbu-copy]'),
+    bankAlias: document.querySelector('[data-bank-alias]'),
+    bankAliasCopy: document.querySelector('[data-bank-alias-copy]'),
     transferModal: document.getElementById('transfer-modal'),
     transferModalClose: Array.from(document.querySelectorAll('[data-transfer-modal-close]')),
     transferEmail: document.querySelector('[data-transfer-email]'),
     transferTotal: document.querySelector('[data-transfer-total]'),
     transferEmailLink: document.querySelector('[data-transfer-email-link]'),
-    publicInscriptos: document.querySelector('[data-public-inscriptos]')
+    publicInscriptos: document.querySelector('[data-public-inscriptos]'),
+    paymentReturnModal: document.getElementById('payment-return-modal'),
+    paymentReturnModalClose: Array.from(document.querySelectorAll('[data-payment-return-close]')),
+    paymentReturnEmail: document.querySelector('[data-payment-return-email]')
 }
 
 function formatPrice(value) {
@@ -141,6 +151,33 @@ function getBuyerData(form) {
     }
 }
 
+function normalizeEmail(value) {
+    return String(value || '').trim().toLowerCase()
+}
+
+function validateMatchingEmails(form) {
+    const emailInput = form.elements.buyerEmail
+    const emailConfirmInput = form.elements.buyerEmailConfirm
+
+    if (!emailInput || !emailConfirmInput) return true
+
+    const email = normalizeEmail(emailInput.value)
+    const emailConfirm = normalizeEmail(emailConfirmInput.value)
+    const emailsMatch = !email || !emailConfirm || email === emailConfirm
+
+    emailConfirmInput.setCustomValidity(emailsMatch ? '' : EMAIL_MISMATCH_MESSAGE)
+    return emailsMatch
+}
+
+function handleEmailInput(event) {
+    const form = event.currentTarget.form
+    if (!form) return
+
+    if (validateMatchingEmails(form) && selectors.formStatus?.textContent === EMAIL_MISMATCH_MESSAGE) {
+        setStatus('')
+    }
+}
+
 function buildOrderPayload(form) {
     return {
         event: EVENT_NAME,
@@ -214,6 +251,38 @@ function closeTransferModal() {
     document.body.classList.remove('modal-open')
 }
 
+function openPaymentReturnModal() {
+    if (!selectors.paymentReturnModal) return
+
+    setText(selectors.paymentReturnEmail, CHECKOUT_CONFIG.confirmationEmail)
+    selectors.paymentReturnModal.hidden = false
+    document.body.classList.add('modal-open')
+}
+
+function closePaymentReturnModal() {
+    if (!selectors.paymentReturnModal) return
+
+    selectors.paymentReturnModal.hidden = true
+    document.body.classList.remove('modal-open')
+}
+
+function handleMercadoPagoReturn() {
+    const params = new URLSearchParams(window.location.search)
+    const paymentStatus = params.get('payment')
+
+    if (!paymentStatus) return
+
+    if (paymentStatus === 'success') {
+        openPaymentReturnModal()
+    } else if (paymentStatus === 'pending') {
+        setStatus('El pago quedó pendiente en Mercado Pago. Te avisaremos por mail cuando se confirme.', 'success')
+    } else if (paymentStatus === 'failure') {
+        setStatus('No se pudo completar el pago en Mercado Pago. Podés intentarlo nuevamente o elegir transferencia bancaria.', 'error')
+    }
+
+    window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`)
+}
+
 function getMercadoPagoPreferenceEndpoint() {
     const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname)
     const isPhpServer = window.location.port === '8000'
@@ -277,8 +346,15 @@ async function handleCheckoutSubmit(event) {
     event.preventDefault()
 
     const form = event.currentTarget
-    if (!form.reportValidity()) return
+    const emailsMatch = validateMatchingEmails(form)
 
+    if (!form.reportValidity()) {
+        if (!emailsMatch) {
+            setStatus(EMAIL_MISMATCH_MESSAGE, 'error')
+            form.elements.buyerEmailConfirm?.focus()
+        }
+        return
+    }
     const order = buildOrderPayload(form)
     const paymentMethod = getSelectedPaymentMethod()
     const submitButton = form.querySelector('button[type="submit"]')
@@ -289,7 +365,7 @@ async function handleCheckoutSubmit(event) {
     try {
         if (paymentMethod === 'transfer') {
             localStorage.setItem('cebsa-last-order', JSON.stringify(order))
-            setStatus('Reserva generada. La entrada se confirma cuando recibamos el comprobante de transferencia.', 'success')
+            setStatus(`Reserva generada. Enviá el comprobante a ${CHECKOUT_CONFIG.confirmationEmail}; cuando se valide el pago te llegará por mail la confirmación con la entrada.`, 'success')
             openTransferModal(order)
             return
         }
@@ -304,8 +380,40 @@ async function handleCheckoutSubmit(event) {
 
 function hydrateTransferData() {
     setText(selectors.bankHolder, CHECKOUT_CONFIG.bankTransfer.holder || 'A completar')
-    setText(selectors.bankAlias, CHECKOUT_CONFIG.bankTransfer.alias || 'A completar')
+    setText(selectors.bankCuit, CHECKOUT_CONFIG.bankTransfer.cuit || 'A completar')
+    setText(selectors.bankAccount, CHECKOUT_CONFIG.bankTransfer.accountNumber || 'A completar')
     setText(selectors.bankCbu, CHECKOUT_CONFIG.bankTransfer.cbu || 'A completar')
+    setText(selectors.bankAlias, CHECKOUT_CONFIG.bankTransfer.alias || 'A completar')
+}
+
+async function copyBankCbu() {
+    const cbu = CHECKOUT_CONFIG.bankTransfer.cbu
+    if (!cbu || !selectors.bankCbuCopy) return
+
+    try {
+        await navigator.clipboard.writeText(cbu)
+        selectors.bankCbuCopy.textContent = 'Copiado'
+        window.setTimeout(() => {
+            selectors.bankCbuCopy.textContent = 'Copiar'
+        }, 1800)
+    } catch {
+        setStatus('No se pudo copiar el CBU automáticamente. Seleccionalo y copialo manualmente.', 'error')
+    }
+}
+
+async function copyBankAlias() {
+    const alias = CHECKOUT_CONFIG.bankTransfer.alias
+    if (!alias || !selectors.bankAliasCopy) return
+
+    try {
+        await navigator.clipboard.writeText(alias)
+        selectors.bankAliasCopy.textContent = 'Copiado'
+        window.setTimeout(() => {
+            selectors.bankAliasCopy.textContent = 'Copiar'
+        }, 1800)
+    } catch {
+        setStatus('No se pudo copiar el alias automaticamente. Seleccionalo y copialo manualmente.', 'error')
+    }
 }
 
 async function hydratePublicInscriptosCounter() {
@@ -394,26 +502,36 @@ function initCheckout() {
     selectors.quantityIncrease?.addEventListener('click', () => changeQuantity(state.quantity + 1))
     selectors.cartToggle?.addEventListener('click', openCart)
     selectors.cartClose?.addEventListener('click', closeCart)
+    selectors.bankCbuCopy?.addEventListener('click', copyBankCbu)
+    selectors.bankAliasCopy?.addEventListener('click', copyBankAlias)
 
     selectors.checkoutForm?.querySelectorAll('input[name="paymentMethod"]').forEach((input) => {
         input.addEventListener('change', handlePaymentChange)
+    })
+    selectors.checkoutForm?.querySelectorAll('input[name="buyerEmail"], input[name="buyerEmailConfirm"]').forEach((input) => {
+        input.addEventListener('input', handleEmailInput)
     })
 
     selectors.checkoutForm?.addEventListener('submit', handleCheckoutSubmit)
     selectors.transferModalClose.forEach((button) => {
         button.addEventListener('click', closeTransferModal)
     })
+    selectors.paymentReturnModalClose.forEach((button) => {
+        button.addEventListener('click', closePaymentReturnModal)
+    })
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
             closeCart()
             closeTransferModal()
+            closePaymentReturnModal()
         }
     })
 
     hydrateTransferData()
     updatePaymentUI()
     updateCart()
+    handleMercadoPagoReturn()
 }
 
 document.querySelector('[data-year]').textContent = String(new Date().getFullYear())

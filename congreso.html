@@ -250,7 +250,7 @@
                     <span class="section__eyebrow">Checkout</span>
                     <h2 class="section__title">Confirmá tus datos y elegí cómo pagar.</h2>
                     <p class="section__lead">
-                        Podés completar la compra con Mercado Pago o reservar la entrada para abonar por transferencia bancaria.
+                        Podés completar la compra con Mercado Pago o elegir transferencia bancaria. En ese caso, la entrada se enviará por mail cuando el equipo del congreso reciba el comprobante de pago.
                     </p>
 
                     <div class="checkout-summary" aria-live="polite">
@@ -274,6 +274,10 @@
                         <label class="form-field" for="buyer-email">
                             <span>Email</span>
                             <input id="buyer-email" name="buyerEmail" type="email" autocomplete="email" required placeholder="nombre@correo.com">
+                        </label>
+                        <label class="form-field" for="buyer-email-confirm">
+                            <span>Repetir email</span>
+                            <input id="buyer-email-confirm" name="buyerEmailConfirm" type="email" autocomplete="off" required placeholder="Volvé a escribir tu email">
                         </label>
                         <label class="form-field" for="buyer-phone">
                             <span>Teléfono</span>
@@ -302,7 +306,7 @@
                             <input type="radio" name="paymentMethod" value="transfer">
                             <span>
                                 <strong>Transferencia bancaria</strong>
-                                <small>Reservá la entrada y enviá el comprobante.</small>
+                                <small>Enviá el comprobante al correo del congreso para confirmar la entrada.</small>
                             </span>
                         </label>
                     </fieldset>
@@ -311,19 +315,33 @@
                         <h3>Datos para transferencia</h3>
                         <dl>
                             <div>
-                                <dt>Titular</dt>
+                                <dt>Razón social</dt>
                                 <dd data-bank-holder>A completar</dd>
                             </div>
                             <div>
-                                <dt>Alias</dt>
-                                <dd data-bank-alias>A completar</dd>
+                                <dt>CUIT</dt>
+                                <dd data-bank-cuit>A completar</dd>
                             </div>
                             <div>
-                                <dt>CBU / CVU</dt>
-                                <dd data-bank-cbu>A completar</dd>
+                                <dt>Número de cuenta</dt>
+                                <dd data-bank-account>A completar</dd>
+                            </div>
+                            <div>
+                                <dt>CBU</dt>
+                                <dd class="transfer-box__copyable">
+                                    <span data-bank-cbu>A completar</span>
+                                    <button class="copy-button" type="button" data-bank-cbu-copy>Copiar</button>
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Alias</dt>
+                                <dd class="transfer-box__copyable">
+                                    <span data-bank-alias>A completar</span>
+                                    <button class="copy-button" type="button" data-bank-alias-copy>Copiar</button>
+                                </dd>
                             </div>
                         </dl>
-                        <p>Al finalizar, se generará el detalle de la reserva para enviar junto con el comprobante.</p>
+                        <p>Después de transferir, enviá el comprobante a cebsa@colegiodelsolar.edu.ar. Cuando se valide el pago, te llegará por mail la confirmación con la entrada.</p>
                     </div>
 
                     <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
@@ -380,9 +398,9 @@
                 </svg>
             </button>
             <span class="section__eyebrow">Reserva pendiente</span>
-            <h2 id="transfer-modal-title">Tu entrada queda sujeta a la transferencia.</h2>
+            <h2 id="transfer-modal-title">Tu entrada se confirma con el comprobante de pago.</h2>
             <p>
-                Para confirmar la reserva tenés que realizar la transferencia bancaria y enviar el comprobante al mail del congreso.
+                Realizá la transferencia bancaria y enviá el comprobante a cebsa@colegiodelsolar.edu.ar. Cuando el equipo del congreso lo valide, te llegará por mail la confirmación con la entrada.
             </p>
             <dl class="payment-modal__summary">
                 <div>
@@ -397,6 +415,32 @@
             <div class="payment-modal__actions">
                 <a class="button button--primary" href="mailto:cebsa@colegiodelsolar.edu.ar" data-transfer-email-link>Enviar comprobante</a>
                 <button class="button button--secondary" type="button" data-transfer-modal-close>Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="payment-modal" id="payment-return-modal" role="dialog" aria-modal="true" aria-labelledby="payment-return-modal-title" hidden>
+        <div class="payment-modal__backdrop" data-payment-return-close></div>
+        <div class="payment-modal__panel">
+            <button class="payment-modal__close" type="button" aria-label="Cerrar" data-payment-return-close>
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+            <span class="section__eyebrow">Compra confirmada</span>
+            <h2 id="payment-return-modal-title">Tu compra fue confirmada.</h2>
+            <p>
+                Mercado Pago aprobó la operación. Te va a llegar un mail desde el correo del congreso con la confirmación de la compra.
+            </p>
+            <dl class="payment-modal__summary">
+                <div>
+                    <dt>Mail del congreso</dt>
+                    <dd data-payment-return-email>cebsa@colegiodelsolar.edu.ar</dd>
+                </div>
+            </dl>
+            <div class="payment-modal__actions">
+                <button class="button button--primary" type="button" data-payment-return-close>Entendido</button>
             </div>
         </div>
     </div>

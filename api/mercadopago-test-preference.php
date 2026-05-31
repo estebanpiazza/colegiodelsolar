@@ -9,11 +9,9 @@ function allowLocalDevelopmentCors(): void
     $allowedOrigins = [
         'http://127.0.0.1:5500',
         'http://127.0.0.1:5501',
-        'http://127.0.0.1:5502',
         'http://127.0.0.1:8000',
         'http://localhost:5500',
         'http://localhost:5501',
-        'http://localhost:5502',
         'http://localhost:8000',
     ];
 
@@ -200,10 +198,7 @@ function createMercadoPagoPreference(array $preference, string $accessToken): ar
 
     return [
         'status' => 500,
-        'body' => json_encode([
-            'error' => 'El servidor PHP no tiene habilitado cURL para conectar con Mercado Pago.',
-            'detail' => 'Habilitá la extensión curl en php.ini o probá en el hosting si ya está activa.',
-        ]),
+        'body' => json_encode(['error' => 'El servidor PHP no tiene habilitado cURL para conectar con Mercado Pago.']),
     ];
 }
 
@@ -216,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(['error' => 'Método no permitido.']);
+    echo json_encode(['error' => 'Metodo no permitido.']);
     exit;
 }
 
@@ -225,10 +220,7 @@ loadMercadoPagoEnv();
 
 if ($accessToken === '') {
     http_response_code(500);
-    echo json_encode([
-        'error' => 'Falta configurar el Access Token de Mercado Pago en el servidor.',
-        'detail' => 'Defini MP_ACCESS_TOKEN o MP_ACCESS_TOKEN_PROD en las variables de entorno, /private/.env o .env del sitio.',
-    ]);
+    echo json_encode(['error' => 'Falta configurar el Access Token de Mercado Pago en el servidor.']);
     exit;
 }
 
@@ -237,77 +229,63 @@ $order = json_decode($rawBody, true);
 
 if (!is_array($order)) {
     http_response_code(400);
-    echo json_encode(['error' => 'JSON inválido.']);
+    echo json_encode(['error' => 'JSON invalido.']);
     exit;
 }
 
-$quantity = filter_var($order['quantity'] ?? 0, FILTER_VALIDATE_INT);
 $buyer = is_array($order['buyer'] ?? null) ? $order['buyer'] : [];
 $email = filter_var($buyer['email'] ?? '', FILTER_VALIDATE_EMAIL);
 
-if (!$quantity || $quantity < 1 || $quantity > 20 || !$email) {
+if (!$email) {
     http_response_code(422);
-    echo json_encode(['error' => 'Datos de compra inválidos.']);
+    echo json_encode(['error' => 'Ingresa un email valido para recibir la confirmacion.']);
     exit;
 }
 
-$ticketPrice = 55000;
 $baseUrl = publicBaseUrl();
-$externalReference = 'CEBSA-' . date('YmdHis') . '-' . random_int(1000, 9999);
+$externalReference = 'CEBSA-TEST-' . date('YmdHis') . '-' . random_int(1000, 9999);
 
 $preference = [
     'items' => [
         [
-            'id' => 'entrada-general-cebsa-2026',
-            'title' => 'Entrada general CEBSA 2026',
-            'description' => 'Congreso de Educación y Bienestar Sur Argentino - 18 y 19 de septiembre de 2026',
-            'quantity' => $quantity,
+            'id' => 'producto-prueba-mercadopago-cebsa',
+            'title' => 'Producto de prueba Mercado Pago CEBSA',
+            'description' => 'Producto de prueba de integracion. No corresponde a una entrada.',
+            'quantity' => 1,
             'currency_id' => 'ARS',
-            'unit_price' => $ticketPrice,
+            'unit_price' => 100,
         ],
     ],
     'payer' => [
         'name' => trim((string)($buyer['name'] ?? '')),
         'email' => $email,
-        'phone' => [
-            'number' => trim((string)($buyer['phone'] ?? '')),
-        ],
-        'identification' => [
-            'type' => 'DNI',
-            'number' => trim((string)($buyer['dni'] ?? '')),
-        ],
     ],
     'external_reference' => $externalReference,
     'metadata' => [
-        'event' => 'CEBSA 2026',
+        'event' => 'Prueba Mercado Pago CEBSA',
+        'product_label' => 'producto de prueba Mercado Pago CEBSA',
         'buyer_name' => trim((string)($buyer['name'] ?? '')),
         'buyer_email' => $email,
         'buyer_phone' => trim((string)($buyer['phone'] ?? '')),
-        'buyer_dni' => trim((string)($buyer['dni'] ?? '')),
-        'buyer_institution' => trim((string)($buyer['institution'] ?? '')),
-        'quantity' => $quantity,
-        'product_label' => 'entrada para CEBSA 2026',
-        'source' => 'congreso-web',
+        'buyer_dni' => '',
+        'buyer_institution' => 'Prueba Mercado Pago',
+        'quantity' => 1,
+        'source' => 'mp-test-page',
+        'is_test_purchase' => 'true',
         'mp_mode' => $mpMode,
     ],
-    'statement_descriptor' => 'CEBSA 2026',
+    'statement_descriptor' => 'CEBSA TEST',
 ];
 
 if ($baseUrl !== '') {
     $preference['back_urls'] = [
-        'success' => $baseUrl . '/congreso.html?payment=success',
-        'failure' => $baseUrl . '/congreso.html?payment=failure',
-        'pending' => $baseUrl . '/congreso.html?payment=pending',
+        'success' => $baseUrl . '/mp-test.html?payment=success',
+        'failure' => $baseUrl . '/mp-test.html?payment=failure',
+        'pending' => $baseUrl . '/mp-test.html?payment=pending',
     ];
     $preference['auto_return'] = 'approved';
-}
 
-$webhookUrl = getenv('MP_WEBHOOK_URL') ?: '';
-if ($webhookUrl === '' && $baseUrl !== '') {
-    $webhookUrl = $baseUrl . '/api/mercadopago-webhook.php';
-}
-
-if ($webhookUrl !== '') {
+    $webhookUrl = getenv('MP_WEBHOOK_URL') ?: $baseUrl . '/api/mercadopago-webhook.php';
     $preference['notification_url'] = $webhookUrl;
 }
 
