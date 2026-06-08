@@ -954,13 +954,12 @@
 
                 <form
                     class="contact__form"
-                    action="https://formsubmit.co/ajax/admisiones@colegiodelsolar.edu.ar"
+                    action="api/contact.php"
                     method="POST"
                     data-reveal
                 >
+                    <input type="hidden" name="_language" value="es">
                     <input type="hidden" name="_subject" value="Nueva consulta desde la landing del Colegio Del Solar">
-                    <input type="hidden" name="_template" value="table">
-                    <input type="hidden" name="_captcha" value="true">
                     <input type="text" name="_honey" class="form__honey" tabindex="-1" autocomplete="off" aria-hidden="true">
 
                     <div class="form__grid">
@@ -987,6 +986,10 @@
                                 required
                             ></textarea>
                         </div>
+                    </div>
+
+                    <div class="form__captcha">
+                        <div class="g-recaptcha" data-sitekey="6LeJ1hMtAAAAAJK71hWYeAqOahtA-0QGFobTwzhA"></div>
                     </div>
 
                     <button type="submit" class="button button--primary button--full">
@@ -1104,6 +1107,7 @@
         </svg>
     </button>
 
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="script.js"></script>
 </body>
 </html>

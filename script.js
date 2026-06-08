@@ -15,6 +15,7 @@ const i18n = {
         contactSending: 'Enviando tu mensaje...',
         contactSendingButton: 'Enviando...',
         contactSubmitButton: 'Enviar mensaje',
+        contactCaptchaRequired: 'Completa el captcha para enviar el mensaje.',
         contactError: 'No pudimos enviar el mensaje. Intenta nuevamente en unos minutos.',
         footerCopy: (year) => `\u00A9 ${year} Colegio Del Solar. Todos los derechos reservados.`
     },
@@ -23,6 +24,7 @@ const i18n = {
         contactSending: 'Sending your message...',
         contactSendingButton: 'Sending...',
         contactSubmitButton: 'Send message',
+        contactCaptchaRequired: 'Please complete the captcha before sending.',
         contactError: 'We could not send your message. Please try again in a few minutes.',
         footerCopy: (year) => `\u00A9 ${year} Colegio Del Solar. All rights reserved.`
     }
@@ -172,6 +174,7 @@ if (contactForm) {
     const contactStatus = contactForm.querySelector('.form__status')
     const contactSubmitButton = contactForm.querySelector('button[type="submit"]')
     const contactSubmitText = contactForm.querySelector('.contact__submit-text')
+    const contactCaptcha = contactForm.querySelector('.g-recaptcha')
 
     const setContactStatus = (message, state = '') => {
         if (!contactStatus) return
@@ -182,6 +185,14 @@ if (contactForm) {
         if (state) {
             contactStatus.classList.add(`is-${state}`)
         }
+    }
+
+    const resetContactCaptcha = () => {
+        if (!contactCaptcha || !window.grecaptcha || typeof window.grecaptcha.reset !== 'function') {
+            return
+        }
+
+        window.grecaptcha.reset()
     }
 
     contactForm.addEventListener('submit', async (event) => {
@@ -196,7 +207,15 @@ if (contactForm) {
 
         if (honeypot) {
             contactForm.reset()
+            resetContactCaptcha()
             setContactStatus(t.contactSent, 'success')
+            return
+        }
+
+        const captchaResponse = String(formData.get('g-recaptcha-response') || '').trim()
+
+        if (contactCaptcha && !captchaResponse) {
+            setContactStatus(t.contactCaptchaRequired, 'error')
             return
         }
 
@@ -231,8 +250,10 @@ if (contactForm) {
             }
 
             contactForm.reset()
+            resetContactCaptcha()
             setContactStatus(t.contactSent, 'success')
         } catch (error) {
+            resetContactCaptcha()
             setContactStatus(
                 error?.message || t.contactError,
                 'error'
