@@ -1274,6 +1274,17 @@ ul {
     left: -9999px;
 }
 
+.form__captcha {
+    min-height: 78px;
+    margin-top: 1rem;
+    overflow: hidden;
+}
+
+.form__captcha .g-recaptcha {
+    width: 304px;
+    max-width: 100%;
+}
+
 .form__status {
     min-height: 1.5rem;
     margin-top: 1rem;
@@ -1760,6 +1771,11 @@ ul {
     .contact__social {
         display: grid;
         grid-template-columns: 1fr;
+    }
+
+    .form__captcha .g-recaptcha {
+        transform: scale(0.92);
+        transform-origin: left top;
     }
 
     [data-reveal],
