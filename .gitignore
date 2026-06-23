@@ -3,3 +3,9 @@ tools/.env
 tools/task_log.txt
 .vscode/sftp.json
 .vscode/ftp-simple.json
+
+.env*
+.flaskenv*
+!.env.example
+!.env.project
+!.env.vault

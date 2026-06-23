@@ -554,7 +554,7 @@ const CONFIG = {
     NOVEDADES_CSV_URL: '',   // pegar URL aqui
 
     // CSV de cumpleanios. Columnas: nombre | grado | fecha (DD/MM)
-    CUMPLE_CSV_URL: '',      // pegar URL aqui
+    CUMPLE_CSV_URL: 'cumpleaniosCDS.csv',
 
     // URL del post de Instagram a mostrar:
     //   https://www.instagram.com/p/SHORTCODE/
@@ -604,7 +604,7 @@ function escHtml(str) {
 }
 
 function parseCSV(text) {
-    const lines = text.trim().split('\n').filter(l => l.trim());
+    const lines = text.replace(/^\uFEFF/, '').trim().split(/\r?\n/).filter(l => l.trim());
     if (lines.length < 2) return [];
     const headers = splitCSVLine(lines[0]).map(h => h.toLowerCase().trim());
     return lines.slice(1).map(line => {
@@ -617,8 +617,10 @@ function parseCSV(text) {
 
 function splitCSVLine(line) {
     const cols = []; let cur = '', inQ = false;
-    for (const ch of line) {
-        if (ch === '"') { inQ = !inQ; }
+    for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"' && inQ && line[i + 1] === '"') { cur += '"'; i++; }
+        else if (ch === '"') { inQ = !inQ; }
         else if (ch === ',' && !inQ) { cols.push(cur); cur = ''; }
         else { cur += ch; }
     }
@@ -746,28 +748,40 @@ function getDatesToShow() {
     const pad = n => String(n).padStart(2,'0');
     const today = new Date();
     const dow   = today.getDay();
-    const dates = [{ label:'Hoy', key: pad(today.getDate())+'/'+pad(today.getMonth()+1) }];
+    const dates = [{ label:'Hoy', key: pad(today.getDate())+'/'+pad(today.getMonth()+1), order: 0 }];
     if (dow === 5) {
         const sat = new Date(today); sat.setDate(today.getDate()+1);
         const sun = new Date(today); sun.setDate(today.getDate()+2);
-        dates.push({ label:'Sab', key: pad(sat.getDate())+'/'+pad(sat.getMonth()+1) });
-        dates.push({ label:'Dom', key: pad(sun.getDate())+'/'+pad(sun.getMonth()+1) });
+        dates.push({ label:'Sab', key: pad(sat.getDate())+'/'+pad(sat.getMonth()+1), order: 1 });
+        dates.push({ label:'Dom', key: pad(sun.getDate())+'/'+pad(sun.getMonth()+1), order: 2 });
     }
     return dates;
 }
 
+function normalizeBirthdayDate(fecha) {
+    const pad = n => String(n).padStart(2,'0');
+    const match = String(fecha || '').trim().match(/^(\d{1,2})\/(\d{1,2})/);
+    return match ? pad(match[1]) + '/' + pad(match[2]) : '';
+}
+
 function renderCumple(items) {
     const dates     = getDatesToShow();
-    const dateIndex = Object.fromEntries(dates.map(d => [d.key, d.label]));
+    const dateIndex = Object.fromEntries(dates.map(d => [d.key, d]));
     const list      = document.getElementById('cumple-list');
     const rangeEl   = document.getElementById('cumple-range-label');
-    const pad       = n => String(n).padStart(2,'0');
 
-    const matching = items.filter(item => {
-        if (!item.fecha) return false;
-        const parts = item.fecha.split('/');
-        return dateIndex[pad(parts[0])+'/'+pad(parts[1])] !== undefined;
-    });
+    const matching = items
+        .map((item, index) => {
+            const key = normalizeBirthdayDate(item.fecha);
+            const day = dateIndex[key];
+            return day ? Object.assign({}, item, {
+                __dayLabel: day.label,
+                __dayOrder: day.order,
+                __rowOrder: index,
+            }) : null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => (a.__dayOrder - b.__dayOrder) || (a.__rowOrder - b.__rowOrder));
 
     rangeEl.textContent = dates.length > 1 ? 'Vie - Sab - Dom' : DAYS[new Date().getDay()];
     list.innerHTML = '';
@@ -783,8 +797,6 @@ function renderCumple(items) {
     }
 
     matching.forEach(function(item, idx) {
-        const parts    = item.fecha.split('/');
-        const dayLabel = dateIndex[pad(parts[0])+'/'+pad(parts[1])] || '';
         const initials = item.nombre.split(' ').filter(w => w.length > 1)
             .slice(0,2).map(w => w[0].toUpperCase()).join('');
         const el = document.createElement('div');
@@ -796,7 +808,7 @@ function renderCumple(items) {
             '<div class="cumple-item__name">' + escHtml(item.nombre) + '</div>' +
             '<div class="cumple-item__grado">' + escHtml(item.grado || '') + '</div>' +
             '</div>' +
-            '<span class="cumple-item__badge">' + escHtml(dayLabel) + '</span>';
+            '<span class="cumple-item__badge">' + escHtml(item.__dayLabel) + '</span>';
         list.appendChild(el);
     });
 
