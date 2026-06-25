@@ -83,14 +83,69 @@
             letter-spacing: 0.06em;
         }
 
-        /* ── Grid 3 columnas ── */
+        /* ── Carrusel de escenas ── */
         .main-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.45fr) minmax(22rem, 1.05fr);
-            gap: 1rem;
+            position: relative;
             padding: 1rem 1.2rem 1.1rem;
             height: 100%;
             overflow: hidden;
+        }
+
+        .scene-carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .scene {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transform: translateX(2.5%);
+            transition: opacity 0.55s ease, transform 0.55s ease;
+            pointer-events: none;
+            display: flex;
+        }
+
+        .scene.is-active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .scene .card {
+            width: 100%;
+            max-width: 100%;
+            height: 100%;
+        }
+
+        .scene-indicators {
+            position: absolute;
+            left: 50%;
+            bottom: 0.35rem;
+            transform: translateX(-50%);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--color-line);
+            z-index: 15;
+        }
+
+        .scene-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #bfccde;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .scene-indicator.is-active {
+            transform: scale(1.5);
+            background: var(--color-ink);
         }
 
         /* ── Tarjeta base ── */
@@ -109,7 +164,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.7rem 1.2rem 0.6rem;
+            padding: 0.92rem 1.45rem 0.82rem;
             border-bottom: 1.5px solid var(--color-line);
             flex-shrink: 0;
         }
@@ -122,9 +177,9 @@
         }
 
         .card__eyebrow {
-            font-size: 0.68rem;
+            font-size: 0.84rem;
             font-weight: 800;
-            letter-spacing: 0.18em;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
             color: var(--color-ink);
         }
@@ -173,7 +228,7 @@
         /* Con imagen: img arriba / texto abajo */
         .novedad-item--with-img {
             display: grid;
-            grid-template-rows: 52% 48%;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
             flex: 1;
         }
 
@@ -185,45 +240,47 @@
 
         /* Sin imagen: sólo texto */
         .novedad-item--text-only {
-            padding: 1.3rem 1.4rem;
+            padding: 2.2rem 2.35rem;
             display: flex;
             flex-direction: column;
-            gap: 0.55rem;
+            gap: 0.85rem;
             flex: 1;
             justify-content: center;
         }
 
         .novedad-item__content {
-            padding: 0.9rem 1.4rem 1.1rem;
+            padding: 1.5rem 1.8rem 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 0.72rem;
+            justify-content: center;
         }
 
         .novedad-item__tag {
             display: inline-flex;
             width: fit-content;
-            padding: 0.22rem 0.75rem;
+            padding: 0.3rem 0.95rem;
             background: var(--color-accent);
             color: var(--color-ink);
             border-radius: 999px;
-            font-size: 0.62rem;
+            font-size: 0.78rem;
             font-weight: 800;
-            letter-spacing: 0.13em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
         }
 
         .novedad-item__title {
             font-family: var(--font-serif);
-            font-size: clamp(1.2rem, 1.5vw, 1.7rem);
-            line-height: 1.05;
+            font-size: clamp(2.1rem, 4vw, 3.55rem);
+            line-height: 0.98;
             color: var(--color-ink);
         }
 
         .novedad-item__body {
-            font-size: 0.87rem;
+            font-size: clamp(1.08rem, 1.45vw, 1.5rem);
             color: var(--color-muted);
-            line-height: 1.65;
+            line-height: 1.45;
+            max-width: 78ch;
         }
 
         /* Dots del slider */
@@ -231,14 +288,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.55rem 1rem;
+            gap: 0.7rem;
+            padding: 0.85rem 1rem;
             flex-shrink: 0;
             border-top: 1.5px solid var(--color-line);
         }
 
         .novedades-dot {
-            width: 7px; height: 7px;
+            width: 11px; height: 11px;
             border-radius: 50%;
             background: var(--color-line);
             transition: background 0.35s, transform 0.35s;
@@ -286,8 +343,8 @@
         .cumple-list {
             display: flex;
             flex-direction: column;
-            gap: 0.3rem;
-            padding: 0.6rem 0.9rem;
+            gap: 0.8rem;
+            padding: 1.2rem 1.45rem;
             overflow-y: auto;
             height: 100%;
             scrollbar-width: none;
@@ -300,14 +357,16 @@
         .cumple-item {
             display: flex;
             align-items: center;
-            gap: 0.62rem;
-            padding: 0.5rem 0.6rem;
+            gap: 0.95rem;
+            padding: 1rem 1.15rem;
             border-radius: var(--radius-sm);
             animation: popIn 0.5s ease both;
+            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border: 1px solid rgba(16, 67, 138, 0.08);
         }
 
         .cumple-item__avatar {
-            width: 2.7rem; height: 2.7rem;
+            width: 3.6rem; height: 3.6rem;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--color-ink), var(--color-ink-soft));
             display: flex;
@@ -315,7 +374,7 @@
             justify-content: center;
             color: #fff;
             font-weight: 800;
-            font-size: 0.85rem;
+            font-size: 1.02rem;
             flex-shrink: 0;
             animation: floatBounce 2.8s ease-in-out infinite;
             box-shadow: 0 4px 12px rgba(16,67,138,0.22);
@@ -325,26 +384,26 @@
 
         .cumple-item__name {
             font-weight: 700;
-            font-size: 0.88rem;
-            line-height: 1.18;
+            font-size: clamp(1.3rem, 2vw, 1.95rem);
+            line-height: 1.12;
             color: var(--color-ink);
             white-space: normal;
             overflow-wrap: anywhere;
         }
 
         .cumple-item__grado {
-            font-size: 0.72rem;
+            font-size: clamp(0.95rem, 1.2vw, 1.2rem);
             color: var(--color-muted);
         }
 
         .cumple-item__badge {
             flex-shrink: 0;
-            font-size: 0.65rem;
+            font-size: 0.88rem;
             font-weight: 700;
             color: var(--color-ink-soft);
             background: var(--color-surface-soft);
             border: 1.5px solid var(--color-line);
-            padding: 0.18rem 0.55rem;
+            padding: 0.34rem 0.78rem;
             border-radius: 999px;
         }
 
@@ -379,6 +438,38 @@
             display: flex;
             flex-direction: column;
             background: #fafafa;
+        }
+
+        .ig-video-wrap {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        .ig-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 1200px) {
+            .novedad-item--with-img {
+                grid-template-columns: 1fr;
+                grid-template-rows: 52% 48%;
+            }
+
+            .novedad-item__title {
+                font-size: clamp(1.7rem, 3.2vw, 2.35rem);
+            }
+
+            .novedad-item__body {
+                font-size: clamp(0.98rem, 1.7vw, 1.2rem);
+            }
+
+            .cumple-item__name {
+                font-size: clamp(1.05rem, 1.9vw, 1.4rem);
+            }
         }
 
         .ig-frame {
@@ -459,86 +550,91 @@
         <div class="topbar__clock" id="js-clock">00:00</div>
     </header>
 
-    <!-- GRID 3 COLUMNAS -->
+    <!-- CARRUSEL DE ESCENAS -->
     <div class="main-grid">
+        <div class="scene-carousel" id="scene-carousel" aria-live="off">
 
-        <!-- COL 1: Novedades -->
-        <div class="card" id="card-novedades">
-            <div class="card__header">
-                <span class="card__dot"></span>
-                <span class="card__eyebrow">Novedades</span>
-            </div>
-            <div class="card__body">
-                <div class="novedades-viewport" id="novedades-viewport">
-                    <div class="novedades-slides-wrap">
-                        <div class="novedades-slide is-active">
-                            <!-- Skeleton inicial -->
-                            <div class="novedad-item--text-only">
-                                <div class="skeleton" style="height:0.75rem;width:5rem"></div>
-                                <div class="skeleton" style="height:1.5rem;width:85%"></div>
-                                <div class="skeleton" style="height:0.85rem;width:100%"></div>
-                                <div class="skeleton" style="height:0.85rem;width:88%"></div>
+            <!-- ESCENA 1: Novedades -->
+            <section class="scene is-active" data-scene="novedades">
+                <div class="card" id="card-novedades">
+                    <div class="card__header">
+                        <span class="card__dot"></span>
+                        <span class="card__eyebrow">Novedades</span>
+                    </div>
+                    <div class="card__body">
+                        <div class="novedades-viewport" id="novedades-viewport">
+                            <div class="novedades-slides-wrap">
+                                <div class="novedades-slide is-active">
+                                    <!-- Skeleton inicial -->
+                                    <div class="novedad-item--text-only">
+                                        <div class="skeleton" style="height:0.75rem;width:5rem"></div>
+                                        <div class="skeleton" style="height:1.5rem;width:85%"></div>
+                                        <div class="skeleton" style="height:0.85rem;width:100%"></div>
+                                        <div class="skeleton" style="height:0.85rem;width:88%"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- COL 2: Instagram -->
-        <div class="card" id="card-instagram">
-            <div class="card__header">
-                <span class="card__dot"
-                      style="background:linear-gradient(45deg,#f09433,#bc1888)"></span>
-                <span class="card__eyebrow">Instagram</span>
-                <span style="margin-left:auto;font-size:0.7rem;color:var(--color-muted);font-weight:700">
-                    @delsolarschool
-                </span>
-            </div>
-            <div class="card__body">
-                <div class="ig-body" id="ig-body">
-                    <!--
-                    COMO CONFIGURAR:
-                    Pegar la URL del post en CONFIG.INSTAGRAM_POST_URL:
-                      https://www.instagram.com/p/SHORTCODE/
-                      https://www.instagram.com/reel/SHORTCODE/
+            <!-- ESCENA 2: Video / Instagram -->
+            <section class="scene" data-scene="video">
+                <div class="card" id="card-instagram">
+                    <div class="card__header">
+                        <span class="card__dot"
+                              style="background:linear-gradient(45deg,#f09433,#bc1888)"></span>
+                        <span class="card__eyebrow">Video del colegio</span>
+                        <span style="margin-left:auto;font-size:0.7rem;color:var(--color-muted);font-weight:700">
+                            @delsolarschool
+                        </span>
+                    </div>
+                    <div class="card__body">
+                        <div class="ig-body" id="ig-body">
+                            <!--
+                            COMO CONFIGURAR:
+                            1) Recomendado: poner un MP4 directo en CONFIG.VIDEO_URL para reproduccion continua.
+                            2) Si VIDEO_URL esta vacio, se intenta Instagram (instagram_latest.json o CONFIG.INSTAGRAM_POST_URL).
 
-                    Funciona con fotos, carruseles y videos sin API key.
-                    Se recarga sola a medianoche; actualizar la URL
-                    cuando se quiera mostrar otra publicacion.
-
-                    ALTERNATIVA AUTOMATICA sin configuracion manual:
-                    Behold.so (tier gratuito): https://behold.so
-                    Crear cuenta, conectar @delsolarschool,
-                    reemplazar el contenido de #ig-body con:
-                      <div id="behold-widget-TUWIDGETID" style="height:100%"></div>
-                      <script src="https://w.behold.so/widget.js" type="module"></script>
-                    -->
-                </div>
-            </div>
-        </div>
-
-        <!-- COL 3: Cumpleaños -->
-        <div class="card" id="card-cumple">
-            <div class="card__header">
-                <span class="card__dot" style="background:#f97316"></span>
-                <span class="card__eyebrow">Cumpleaños <span class="cumple-header-emoji">🎂</span></span>
-                <span id="cumple-range-label"
-                      style="margin-left:auto;font-size:0.68rem;color:var(--color-muted);font-weight:700"></span>
-            </div>
-            <div class="card__body">
-                <div class="cumple-list" id="cumple-list">
-                    <div class="cumple-item">
-                        <div class="skeleton" style="width:2.7rem;height:2.7rem;border-radius:50%;flex-shrink:0"></div>
-                        <div style="flex:1;display:flex;flex-direction:column;gap:0.4rem">
-                            <div class="skeleton" style="height:0.9rem;width:70%"></div>
-                            <div class="skeleton" style="height:0.7rem;width:44%"></div>
+                            URL del post permitida:
+                            https://www.instagram.com/p/SHORTCODE/
+                            https://www.instagram.com/reel/SHORTCODE/
+                            -->
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <!-- ESCENA 3: Cumpleaños -->
+            <section class="scene" data-scene="cumple">
+                <div class="card" id="card-cumple">
+                    <div class="card__header">
+                        <span class="card__dot" style="background:#f97316"></span>
+                        <span class="card__eyebrow">Cumpleaños <span class="cumple-header-emoji">🎂</span></span>
+                        <span id="cumple-range-label"
+                              style="margin-left:auto;font-size:0.68rem;color:var(--color-muted);font-weight:700"></span>
+                    </div>
+                    <div class="card__body">
+                        <div class="cumple-list" id="cumple-list">
+                            <div class="cumple-item">
+                                <div class="skeleton" style="width:2.7rem;height:2.7rem;border-radius:50%;flex-shrink:0"></div>
+                                <div style="flex:1;display:flex;flex-direction:column;gap:0.4rem">
+                                    <div class="skeleton" style="height:0.9rem;width:70%"></div>
+                                    <div class="skeleton" style="height:0.7rem;width:44%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="scene-indicators" id="scene-indicators" aria-hidden="true">
+                <span class="scene-indicator is-active"></span>
+                <span class="scene-indicator"></span>
+                <span class="scene-indicator"></span>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -561,6 +657,17 @@ const CONFIG = {
     //   https://www.instagram.com/reel/SHORTCODE/
     // El iframe carga fotos, carruseles y videos directamente.
     INSTAGRAM_POST_URL: '',  // pegar URL aqui
+
+    // Video MP4 directo (opcional). Si esta presente, se muestra este video.
+    // Si queda vacio, se usa Instagram como fallback.
+    VIDEO_URL: '',
+
+    // Duraciones de escenas (milisegundos):
+    // [novedades, video, cumpleanios]
+    SCENE_DURATIONS: [12000, 11000, 10000],
+
+    // Tiempo del slider interno de novedades.
+    NOVEDADES_SLIDE_MS: 6000,
 };
 
 // ═══════════════════════════════════════
@@ -722,7 +829,7 @@ function buildNovedades(items) {
             current = (current + 1) % slides.length;
             slides[current].classList.add('is-active');
             dots[current].classList.add('is-active');
-        }, 8000);
+        }, Math.max(2000, Number(CONFIG.NOVEDADES_SLIDE_MS) || 6000));
     }
 }
 
@@ -855,22 +962,21 @@ async function loadCumple() {
 //  Funciona para fotos, carruseles y videos sin API key.
 //  Solo hay que pegar la URL del post en CONFIG.INSTAGRAM_POST_URL.
 // ═══════════════════════════════════════
-function getShortcode(url) {
-    const m = String(url).match(/instagram\.com\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/);
-    return m ? m[1] : null;
+function getInstagramTarget(url) {
+    const m = String(url).match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/);
+    return m ? { type: m[1], shortcode: m[2] } : null;
 }
 
 function showInstagramEmbed(url) {
     const container = document.getElementById('ig-body');
-    const shortcode = getShortcode(url);
-    if (!shortcode) {
+    const target = getInstagramTarget(url);
+    if (!target) {
         console.warn('[instagram] URL invalida:', url);
         showInstagramPlaceholder('URL de Instagram invalida.');
         return;
     }
-    // Embed oficial: soporta fotos, carruseles y videos/reels sin API key.
-    // El tipo (p vs reel) no importa para el embed — siempre funciona con /p/
-    var embedUrl = 'https://www.instagram.com/p/' + encodeURIComponent(shortcode) + '/embed/captioned/';
+    var embedType = target.type === 'tv' ? 'p' : target.type;
+    var embedUrl = 'https://www.instagram.com/' + embedType + '/' + encodeURIComponent(target.shortcode) + '/embed/captioned/';
     container.innerHTML =
         '<iframe class="ig-frame"' +
         ' src="' + escHtml(embedUrl) + '"' +
@@ -879,6 +985,22 @@ function showInstagramEmbed(url) {
         ' allow="encrypted-media"' +
         ' title="Instagram @delsolarschool">' +
         '</iframe>';
+}
+
+function showDirectVideo(videoUrl) {
+    var container = document.getElementById('ig-body');
+    if (!container || !videoUrl) return false;
+
+    var safeUrl = String(videoUrl).trim();
+    if (!/^(https:\/\/|\.\/|\.\.\/|\/)/.test(safeUrl)) return false;
+
+    container.innerHTML =
+        '<div class="ig-video-wrap">' +
+        '<video class="ig-video" autoplay muted loop playsinline preload="auto" controls>' +
+        '<source src="' + escHtml(safeUrl) + '">' +
+        '</video>' +
+        '</div>';
+    return true;
 }
 
 function showInstagramPlaceholder(msg) {
@@ -897,12 +1019,19 @@ function showInstagramPlaceholder(msg) {
 }
 
 async function renderInstagram() {
+    if (showDirectVideo(CONFIG.VIDEO_URL)) {
+        return;
+    }
+
     // 1. Intentar leer instagram_latest.json generado por get_instagram_post.py
     //    (se actualiza automaticamente cada noche via Tarea Programada de Windows)
     try {
         var res = await fetch('instagram_latest.json?v=' + Date.now(), { cache: 'no-store' });
         if (res.ok) {
             var data = await res.json();
+            if (data.video_url && showDirectVideo(data.video_url)) {
+                return;
+            }
             if (data.url && data.url.trim()) {
                 showInstagramEmbed(data.url.trim());
                 return;
@@ -920,9 +1049,50 @@ async function renderInstagram() {
 
     // 3. Sin datos: mostrar placeholder con instrucciones
     showInstagramPlaceholder(
-        'Ejecutar tools/setup_task.ps1 para activar la actualizacion automatica.\n' +
-        'O pegar la URL del post en CONFIG.INSTAGRAM_POST_URL.'
+        'Definir CONFIG.VIDEO_URL con un MP4 directo o ejecutar tools/setup_task.ps1 para Instagram automatico.'
     );
+}
+
+function startSceneCarousel() {
+    var scenes = Array.from(document.querySelectorAll('.scene-carousel .scene'));
+    var dots = Array.from(document.querySelectorAll('#scene-indicators .scene-indicator'));
+    if (scenes.length <= 1) return;
+
+    var durations = Array.isArray(CONFIG.SCENE_DURATIONS) ? CONFIG.SCENE_DURATIONS : [];
+    var index = 0;
+    var timerId = null;
+
+    function activate(nextIndex) {
+        scenes.forEach(function(scene, i) {
+            scene.classList.toggle('is-active', i === nextIndex);
+        });
+        dots.forEach(function(dot, i) {
+            dot.classList.toggle('is-active', i === nextIndex);
+        });
+        index = nextIndex;
+    }
+
+    function scheduleNext() {
+        window.clearTimeout(timerId);
+        var ms = Number(durations[index]);
+        var delay = Number.isFinite(ms) && ms >= 2000 ? ms : 10000;
+
+        timerId = window.setTimeout(function() {
+            activate((index + 1) % scenes.length);
+            scheduleNext();
+        }, delay);
+    }
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            window.clearTimeout(timerId);
+            return;
+        }
+        scheduleNext();
+    });
+
+    activate(0);
+    scheduleNext();
 }
 
 // ═══════════════════════════════════════
@@ -931,6 +1101,7 @@ async function renderInstagram() {
 loadNovedades();
 loadCumple();
 renderInstagram();
+startSceneCarousel();
 </script>
 
 </body>
