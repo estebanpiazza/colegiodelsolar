@@ -43,6 +43,8 @@ const selectors = {
     cartLineTotal: document.querySelector('[data-cart-line-total]'),
     checkoutQuantity: document.querySelector('[data-checkout-quantity]'),
     checkoutTotal: document.querySelector('[data-checkout-total]'),
+    attendeesBlock: document.getElementById('attendees-block'),
+    attendeesFields: document.getElementById('attendees-fields'),
     cartPanel: document.querySelector('[data-cart-panel]'),
     cartToggle: document.querySelector('[data-cart-toggle]'),
     cartClose: document.querySelector('[data-cart-close]'),
@@ -100,6 +102,8 @@ function updateCart() {
     if (selectors.quantityDecrease) {
         selectors.quantityDecrease.disabled = state.quantity <= 1
     }
+
+    renderAttendeeFields()
 }
 
 function changeQuantity(nextQuantity) {
@@ -151,6 +155,76 @@ function getBuyerData(form) {
     }
 }
 
+function escapeHtml(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+}
+
+function renderAttendeeFields() {
+    if (!selectors.attendeesBlock || !selectors.attendeesFields || !selectors.checkoutForm) return
+
+    if (state.quantity <= 1) {
+        selectors.attendeesBlock.hidden = true
+        selectors.attendeesFields.innerHTML = ''
+        return
+    }
+
+    const previousValues = {}
+    selectors.attendeesFields.querySelectorAll('input').forEach((input) => {
+        previousValues[input.name] = input.value
+    })
+
+    let markup = ''
+    for (let personNumber = 2; personNumber <= state.quantity; personNumber += 1) {
+        const nameKey = `attendeeName${personNumber}`
+        const emailKey = `attendeeEmail${personNumber}`
+        const dniKey = `attendeeDni${personNumber}`
+
+        markup += `
+            <fieldset class="attendee-person">
+                <legend>Persona ${personNumber}</legend>
+                <div class="form-grid">
+                    <label class="form-field form-field--wide" for="attendee-name-${personNumber}">
+                        <span>Nombre y apellido</span>
+                        <input id="attendee-name-${personNumber}" name="${nameKey}" type="text" autocomplete="name" required placeholder="Nombre completo" value="${escapeHtml(previousValues[nameKey])}">
+                    </label>
+                    <label class="form-field" for="attendee-email-${personNumber}">
+                        <span>Email</span>
+                        <input id="attendee-email-${personNumber}" name="${emailKey}" type="email" autocomplete="email" required placeholder="nombre@correo.com" value="${escapeHtml(previousValues[emailKey])}">
+                    </label>
+                    <label class="form-field" for="attendee-dni-${personNumber}">
+                        <span>DNI</span>
+                        <input id="attendee-dni-${personNumber}" name="${dniKey}" type="text" inputmode="numeric" required placeholder="DNI" value="${escapeHtml(previousValues[dniKey])}">
+                    </label>
+                </div>
+            </fieldset>
+        `
+    }
+
+    selectors.attendeesFields.innerHTML = markup
+    selectors.attendeesBlock.hidden = false
+}
+
+function getAdditionalAttendees(form) {
+    const formData = new FormData(form)
+    const attendees = []
+
+    for (let personNumber = 2; personNumber <= state.quantity; personNumber += 1) {
+        attendees.push({
+            person: personNumber,
+            name: String(formData.get(`attendeeName${personNumber}`) || '').trim(),
+            email: String(formData.get(`attendeeEmail${personNumber}`) || '').trim(),
+            dni: String(formData.get(`attendeeDni${personNumber}`) || '').trim()
+        })
+    }
+
+    return attendees
+}
+
 function normalizeEmail(value) {
     return String(value || '').trim().toLowerCase()
 }
@@ -179,6 +253,8 @@ function handleEmailInput(event) {
 }
 
 function buildOrderPayload(form) {
+    const attendees = getAdditionalAttendees(form)
+
     return {
         event: EVENT_NAME,
         date: '18 y 19 de septiembre de 2026',
@@ -187,6 +263,7 @@ function buildOrderPayload(form) {
         unitPrice: TICKET_PRICE,
         total: getCartTotal(),
         buyer: getBuyerData(form),
+        attendees,
         source: window.location.href
     }
 }
@@ -202,6 +279,14 @@ function buildOrderMessage(order) {
         `Entradas: ${order.quantity}`,
         `Total: ${formatPrice(order.total)}`
     ]
+
+    if (Array.isArray(order.attendees) && order.attendees.length) {
+        lines.push('')
+        lines.push('Datos de asistentes:')
+        order.attendees.forEach((attendee) => {
+            lines.push(`Persona ${attendee.person}: ${attendee.name} | ${attendee.email} | DNI ${attendee.dni}`)
+        })
+    }
 
     return lines.join('\n')
 }
