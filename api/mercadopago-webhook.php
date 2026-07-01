@@ -198,6 +198,31 @@ function paymentEmailDetails(array $payment): array
     $payerEmail = (string)($metadata['buyer_email'] ?? $payer['email'] ?? '');
     $payerName = trim((string)($metadata['buyer_name'] ?? trim(((string)($payer['first_name'] ?? '')) . ' ' . ((string)($payer['last_name'] ?? '')))));
     $amount = number_format((float)($payment['transaction_amount'] ?? 0), 2, ',', '.');
+    $attendeesRaw = (string)($metadata['attendees_json'] ?? '[]');
+    $attendees = json_decode($attendeesRaw, true);
+
+    if (!is_array($attendees)) {
+        $attendees = [];
+    }
+
+    $normalizedAttendees = [];
+    foreach ($attendees as $attendee) {
+        if (!is_array($attendee)) {
+            continue;
+        }
+
+        $person = filter_var($attendee['person'] ?? null, FILTER_VALIDATE_INT);
+        if (!$person || $person < 2 || $person > 20) {
+            continue;
+        }
+
+        $normalizedAttendees[] = [
+            'person' => $person,
+            'name' => trim((string)($attendee['name'] ?? '')),
+            'email' => trim((string)($attendee['email'] ?? '')),
+            'dni' => trim((string)($attendee['dni'] ?? '')),
+        ];
+    }
 
     return [
         'payment_id' => (string)($payment['id'] ?? '-'),
@@ -214,6 +239,8 @@ function paymentEmailDetails(array $payment): array
         'product_label' => (string)($metadata['product_label'] ?? $metadata['event'] ?? 'entrada para CEBSA 2026'),
         'source' => (string)($metadata['source'] ?? '-'),
         'is_test_purchase' => (string)($metadata['is_test_purchase'] ?? 'false'),
+        'attendees_count' => (string)($metadata['attendees_count'] ?? count($normalizedAttendees)),
+        'attendees' => $normalizedAttendees,
     ];
 }
 
@@ -263,6 +290,19 @@ function sendCongressPaymentEmail(array $payment): bool
         'Origen: ' . $details['source'],
         'Compra de prueba: ' . $details['is_test_purchase'],
     ]);
+
+    if (is_array($details['attendees']) && count($details['attendees']) > 0) {
+        $body .= "\n\nDatos de asistentes adicionales:";
+        foreach ($details['attendees'] as $attendee) {
+            $body .= "\n" . sprintf(
+                'Persona %d: %s | %s | DNI %s',
+                (int)($attendee['person'] ?? 0),
+                (string)((string)($attendee['name'] ?? '') !== '' ? $attendee['name'] : '-'),
+                (string)((string)($attendee['email'] ?? '') !== '' ? $attendee['email'] : '-'),
+                (string)((string)($attendee['dni'] ?? '') !== '' ? $attendee['dni'] : '-')
+            );
+        }
+    }
 
     $headers = paymentMailHeaders(congressEmailAddress(), $details['payer_email']);
 

@@ -244,12 +244,50 @@ if (!is_array($order)) {
 $quantity = filter_var($order['quantity'] ?? 0, FILTER_VALIDATE_INT);
 $buyer = is_array($order['buyer'] ?? null) ? $order['buyer'] : [];
 $email = filter_var($buyer['email'] ?? '', FILTER_VALIDATE_EMAIL);
+$attendees = is_array($order['attendees'] ?? null) ? $order['attendees'] : [];
 
 if (!$quantity || $quantity < 1 || $quantity > 20 || !$email) {
     http_response_code(422);
     echo json_encode(['error' => 'Datos de compra inválidos.']);
     exit;
 }
+
+$normalizedAttendees = [];
+foreach ($attendees as $attendee) {
+    if (!is_array($attendee)) {
+        continue;
+    }
+
+    $person = filter_var($attendee['person'] ?? null, FILTER_VALIDATE_INT);
+    if (!$person || $person < 2 || $person > 20) {
+        continue;
+    }
+
+    $normalizedAttendees[] = [
+        'person' => $person,
+        'name' => trim((string)($attendee['name'] ?? '')),
+        'email' => trim((string)($attendee['email'] ?? '')),
+        'dni' => trim((string)($attendee['dni'] ?? '')),
+    ];
+}
+
+$attendeesJson = json_encode($normalizedAttendees, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+if ($attendeesJson === false) {
+    $attendeesJson = '[]';
+}
+
+$attendeesSummaryLines = [];
+foreach ($normalizedAttendees as $attendee) {
+    $attendeesSummaryLines[] = sprintf(
+        'Persona %d: %s | %s | DNI %s',
+        (int)$attendee['person'],
+        (string)($attendee['name'] !== '' ? $attendee['name'] : '-'),
+        (string)($attendee['email'] !== '' ? $attendee['email'] : '-'),
+        (string)($attendee['dni'] !== '' ? $attendee['dni'] : '-')
+    );
+}
+
+$attendeesSummary = implode(' || ', $attendeesSummaryLines);
 
 $ticketPrice = 55000;
 $baseUrl = publicBaseUrl();
@@ -286,6 +324,9 @@ $preference = [
         'buyer_dni' => trim((string)($buyer['dni'] ?? '')),
         'buyer_institution' => trim((string)($buyer['institution'] ?? '')),
         'quantity' => $quantity,
+        'attendees_count' => count($normalizedAttendees),
+        'attendees_json' => $attendeesJson,
+        'attendees_summary' => $attendeesSummary,
         'product_label' => 'entrada para CEBSA 2026',
         'source' => 'congreso-web',
         'mp_mode' => $mpMode,
