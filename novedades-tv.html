@@ -430,27 +430,38 @@
         .cumple-empty__text { font-size: 0.92rem; font-weight: 600; }
 
         /* ════════════════════════════════════════
-           INSTAGRAM · columna completa, iframe
+           VIDEO DEL COLEGIO · formato vertical
         ════════════════════════════════════════ */
 
-        .ig-body {
+        .video-body {
             height: 100%;
             display: flex;
-            flex-direction: column;
-            background: #fafafa;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at 20% 10%, rgba(16,67,138,0.12), transparent 45%),
+                radial-gradient(circle at 80% 85%, rgba(253,205,36,0.24), transparent 40%),
+                #0d1f3b;
+            padding: 0.9rem;
         }
 
-        .ig-video-wrap {
+        .video-wrap {
             position: relative;
-            width: 100%;
             height: 100%;
+            max-height: 100%;
+            aspect-ratio: 9 / 16;
+            width: min(100%, calc((100vh - 9rem) * 9 / 16));
             background: #000;
+            border-radius: 0.9rem;
+            overflow: hidden;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
         }
 
-        .ig-video {
+        .video-player {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            background: #000;
         }
 
         @media (max-width: 1200px) {
@@ -472,15 +483,7 @@
             }
         }
 
-        .ig-frame {
-            flex: 1;
-            width: 100%;
-            border: none;
-            display: block;
-            background: #fafafa;
-        }
-
-        .ig-placeholder {
+        .video-placeholder {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -492,35 +495,26 @@
             text-align: center;
         }
 
-        .ig-placeholder__icon {
+        .video-placeholder__icon {
             width: 4rem; height: 4rem;
-            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            background: linear-gradient(145deg, #10438a, #1a5299);
             border-radius: 1.1rem;
             display: flex; align-items: center; justify-content: center;
             color: #fff;
         }
 
-        .ig-placeholder__handle {
+        .video-placeholder__title {
             font-family: var(--font-serif);
             font-size: 1.7rem;
             font-weight: 700;
             color: var(--color-ink);
         }
 
-        .ig-placeholder__note {
+        .video-placeholder__note {
             font-size: 0.74rem;
             color: var(--color-muted);
             max-width: 280px;
             line-height: 1.6;
-        }
-
-        .ig-placeholder__code {
-            font-family: monospace;
-            font-size: 0.72rem;
-            background: rgba(0,0,0,0.06);
-            padding: 0.5rem 0.9rem;
-            border-radius: 0.5rem;
-            color: var(--color-ink);
         }
 
         /* ── Skeleton ── */
@@ -579,28 +573,16 @@
                 </div>
             </section>
 
-            <!-- ESCENA 2: Video / Instagram -->
+            <!-- ESCENA 2: Video del colegio -->
             <section class="scene" data-scene="video">
-                <div class="card" id="card-instagram">
+                <div class="card" id="card-video">
                     <div class="card__header">
-                        <span class="card__dot"
-                              style="background:linear-gradient(45deg,#f09433,#bc1888)"></span>
+                        <span class="card__dot"></span>
                         <span class="card__eyebrow">Video del colegio</span>
-                        <span style="margin-left:auto;font-size:0.7rem;color:var(--color-muted);font-weight:700">
-                            @delsolarschool
-                        </span>
                     </div>
                     <div class="card__body">
-                        <div class="ig-body" id="ig-body">
-                            <!--
-                            COMO CONFIGURAR:
-                            1) Recomendado: poner un MP4 directo en CONFIG.VIDEO_URL para reproduccion continua.
-                            2) Si VIDEO_URL esta vacio, se intenta Instagram (instagram_latest.json o CONFIG.INSTAGRAM_POST_URL).
-
-                            URL del post permitida:
-                            https://www.instagram.com/p/SHORTCODE/
-                            https://www.instagram.com/reel/SHORTCODE/
-                            -->
+                        <div class="video-body" id="video-body">
+                            <!-- Carga un MP4 local o remoto desde CONFIG.VIDEO_URL -->
                         </div>
                     </div>
                 </div>
@@ -652,15 +634,8 @@ const CONFIG = {
     // CSV de cumpleanios. Columnas: nombre | grado | fecha (DD/MM)
     CUMPLE_CSV_URL: 'cumpleaniosCDS.csv',
 
-    // URL del post de Instagram a mostrar:
-    //   https://www.instagram.com/p/SHORTCODE/
-    //   https://www.instagram.com/reel/SHORTCODE/
-    // El iframe carga fotos, carruseles y videos directamente.
-    INSTAGRAM_POST_URL: '',  // pegar URL aqui
-
-    // Video MP4 directo (opcional). Si esta presente, se muestra este video.
-    // Si queda vacio, se usa Instagram como fallback.
-    VIDEO_URL: '',
+    // Video MP4 directo (local o remoto).
+    VIDEO_URL: 'Del Solar School delsolarschool Fotos y videos de Instagram.mp4',
 
     // Duraciones de escenas (milisegundos):
     // [novedades, video, cumpleanios]
@@ -674,6 +649,12 @@ const CONFIG = {
 //  DATOS PLACEHOLDER
 // ═══════════════════════════════════════
 const NOVEDADES_PLACEHOLDER = [
+    {
+        etiqueta: 'Comunicacion',
+        titulo: 'Estrenamos Television',
+        cuerpo: 'Sumamos un nuevo espacio de comunicacion donde podran ver novedades, destacados y cumpleanios del colegio.',
+        imagen_url: '',
+    },
     {
         etiqueta: 'Institucional',
         titulo: 'Jornada de puertas abiertas',
@@ -956,101 +937,42 @@ async function loadCumple() {
 }
 
 // ═══════════════════════════════════════
-//  INSTAGRAM
-//  Usa el endpoint de embed oficial de Instagram:
-//  instagram.com/p/{shortcode}/embed/captioned/
-//  Funciona para fotos, carruseles y videos sin API key.
-//  Solo hay que pegar la URL del post en CONFIG.INSTAGRAM_POST_URL.
+//  VIDEO DEL COLEGIO
 // ═══════════════════════════════════════
-function getInstagramTarget(url) {
-    const m = String(url).match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/);
-    return m ? { type: m[1], shortcode: m[2] } : null;
-}
-
-function showInstagramEmbed(url) {
-    const container = document.getElementById('ig-body');
-    const target = getInstagramTarget(url);
-    if (!target) {
-        console.warn('[instagram] URL invalida:', url);
-        showInstagramPlaceholder('URL de Instagram invalida.');
-        return;
-    }
-    var embedType = target.type === 'tv' ? 'p' : target.type;
-    var embedUrl = 'https://www.instagram.com/' + embedType + '/' + encodeURIComponent(target.shortcode) + '/embed/captioned/';
-    container.innerHTML =
-        '<iframe class="ig-frame"' +
-        ' src="' + escHtml(embedUrl) + '"' +
-        ' scrolling="no"' +
-        ' allowtransparency="true"' +
-        ' allow="encrypted-media"' +
-        ' title="Instagram @delsolarschool">' +
-        '</iframe>';
-}
-
 function showDirectVideo(videoUrl) {
-    var container = document.getElementById('ig-body');
+    var container = document.getElementById('video-body');
     if (!container || !videoUrl) return false;
 
     var safeUrl = String(videoUrl).trim();
-    if (!/^(https:\/\/|\.\/|\.\.\/|\/)/.test(safeUrl)) return false;
+    if (!safeUrl || /^(javascript:|data:)/i.test(safeUrl)) return false;
 
     container.innerHTML =
-        '<div class="ig-video-wrap">' +
-        '<video class="ig-video" autoplay muted loop playsinline preload="auto" controls>' +
+        '<div class="video-wrap">' +
+        '<video class="video-player" autoplay muted loop playsinline preload="auto">' +
         '<source src="' + escHtml(safeUrl) + '">' +
         '</video>' +
         '</div>';
     return true;
 }
 
-function showInstagramPlaceholder(msg) {
-    var container = document.getElementById('ig-body');
+function showVideoPlaceholder(msg) {
+    var container = document.getElementById('video-body');
     container.innerHTML =
-        '<div class="ig-placeholder">' +
-        '<div class="ig-placeholder__icon">' +
-        '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"' +
+        '<div class="video-placeholder">' +
+        '<div class="video-placeholder__icon">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"' +
         ' fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-        '<rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>' +
-        '<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>' +
-        '<line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>' +
-        '<div class="ig-placeholder__handle">@delsolarschool</div>' +
-        '<p class="ig-placeholder__note">' + escHtml(msg) + '</p>' +
+        '<polygon points="5 3 19 12 5 21 5 3"/></svg></div>' +
+        '<div class="video-placeholder__title">Video del colegio</div>' +
+        '<p class="video-placeholder__note">' + escHtml(msg) + '</p>' +
         '</div>';
 }
 
-async function renderInstagram() {
+function renderVideoScene() {
     if (showDirectVideo(CONFIG.VIDEO_URL)) {
         return;
     }
-
-    // 1. Intentar leer instagram_latest.json generado por get_instagram_post.py
-    //    (se actualiza automaticamente cada noche via Tarea Programada de Windows)
-    try {
-        var res = await fetch('instagram_latest.json?v=' + Date.now(), { cache: 'no-store' });
-        if (res.ok) {
-            var data = await res.json();
-            if (data.video_url && showDirectVideo(data.video_url)) {
-                return;
-            }
-            if (data.url && data.url.trim()) {
-                showInstagramEmbed(data.url.trim());
-                return;
-            }
-        }
-    } catch(e) {
-        console.info('[instagram] instagram_latest.json no disponible:', e.message);
-    }
-
-    // 2. Fallback: URL manual en CONFIG
-    if (CONFIG.INSTAGRAM_POST_URL.trim()) {
-        showInstagramEmbed(CONFIG.INSTAGRAM_POST_URL.trim());
-        return;
-    }
-
-    // 3. Sin datos: mostrar placeholder con instrucciones
-    showInstagramPlaceholder(
-        'Definir CONFIG.VIDEO_URL con un MP4 directo o ejecutar tools/setup_task.ps1 para Instagram automatico.'
-    );
+    showVideoPlaceholder('No se encontro el archivo de video configurado.');
 }
 
 function startSceneCarousel() {
@@ -1100,7 +1022,7 @@ function startSceneCarousel() {
 // ═══════════════════════════════════════
 loadNovedades();
 loadCumple();
-renderInstagram();
+renderVideoScene();
 startSceneCarousel();
 </script>
 
